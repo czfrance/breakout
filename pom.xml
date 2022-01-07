@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>CompSci308_2022Spring</groupId>
+    <artifactId>breakout_cf219</artifactId>
+    <version>master-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <!-- set up name for repeated values to make it easy to change -->
+    <properties>
+        <project.build.java.version>17</project.build.java.version>
+    </properties>
+
+    <dependencies>
+        <!-- use latest version of OpenJFX that fixes Mac ARM bug -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${project.build.java.version}.0.2-ea+2</version>
+        </dependency>
+        <!-- in case anyone wants to play sounds in the game -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>${project.build.java.version}.0.2-ea+2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- compiles project source code using correct version and flags -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <encoding>iso-8859-1</encoding>
+                    <source>${project.build.java.version}</source>
+                    <target>${project.build.java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
