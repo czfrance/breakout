@@ -1,15 +1,12 @@
 # breakout
-## NAME
-
-
-DO NO FORK THIS REPOSITORY, clone it directly to your computer.
+## Cynthia France
 
 
 This project implements the game of Breakout.
 
 ### Timeline
 
-Start Date: 
+Start Date: Tuesday, January 11th
 
 Finish Date: 
 
