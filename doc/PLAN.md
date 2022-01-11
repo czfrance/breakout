@@ -54,7 +54,7 @@ could be general ideas too.
  * "Winter Freeze": All blocks, or the blocks within a certain range, freeze in place for a certain
     amount of time. 
 
- * "Snowball": Ball becomes larger, similar to a snowball being rolled up. The paddle would probably
+ * "Avalanche": Ball becomes larger, similar to a snowball being rolled up. The paddle would probably
     also need to be enlarged. Effect is in place for a certain amount of time
 
  * "Hailstorm": When a key is clicked, or at some certain time after power-up is obtained, 
@@ -97,4 +97,8 @@ could be general ideas too.
 
  * Power_up
    * caught(): does/changes something when power-up is caught/obtained
+ 
+ * BreakoutGameLoop
+   * step(): move all components that need moving and set component colors/attributes. 
+     Updates game
 
