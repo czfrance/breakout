@@ -30,6 +30,7 @@ public class Breakout {
     private Ball ball;
     private Paddle paddle;
     private Block wood_blk;
+    private Block blk2;
     private ArrayList<Block> blocks = new ArrayList<>();
     private int wWidth;
     private int wHeight;
@@ -45,14 +46,17 @@ public class Breakout {
 
         //NOTE: NEED TO REPLACE ALL IMAGES EXCEPT BALL WITH PROPERLY SIZED ONES
             //CAN'T HAVE ADDITIONAL BLANK SPACE
-        ball = new Ball(20, BALL_SPEED, 30, ball_img, 200, 200);
-        paddle = new Paddle(175, 300, 50, 20, paddle_img);
-        wood_blk = new Block(100, 100, 50, 40, wood_blk_img);
+        ball = new Ball(10, BALL_SPEED, 30, ball_img, 200, 200);
+        paddle = new Paddle(175, 300, 20, 7, paddle_img);
+        wood_blk = new Block(100, 100, 30, 15, wood_blk_img);
+        blk2 = new Block(250, 250, 30, 15, wood_blk_img);
         blocks.add(wood_blk);
+        blocks.add(blk2);
 
         root.getChildren().add(ball);
         root.getChildren().add(paddle);
         root.getChildren().add(wood_blk);
+        root.getChildren().add(blk2);
 
         Scene scene = new Scene(root, width, height, background);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));

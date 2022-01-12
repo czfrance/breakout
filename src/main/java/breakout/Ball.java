@@ -22,9 +22,6 @@ public class Ball extends ImageView{
     }
 
     public void move(int w, int h, double elapsedTime, boolean intersectHoriz, boolean intersectVert) {
-//        if (intersect) {
-//            angle = 360 - angle;
-//        }
         if (onVertBorder(w) || intersectVert) {
             //right = !right;
             if (angle <= 180) {
@@ -32,14 +29,10 @@ public class Ball extends ImageView{
             } else {
                 angle = 540 - angle;
             }
-            //System.out.println("horizontal bounce");
-            System.out.println(intersectHoriz + " " + intersectVert + " " + angle);
         }
 
         if (onHorizBorder(h) || intersectHoriz) {
             angle = 360 - angle;
-            //System.out.println("vertical bounce");
-            System.out.println(intersectHoriz + " " + intersectVert);
         }
 
         this.setX(this.getX() + (speed * Math.cos(Math.toRadians(angle))) * elapsedTime);
