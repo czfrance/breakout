@@ -1,19 +1,21 @@
 package breakout;
 
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
+//import javafx.scene.image.ImageView;
+//import javafx.scene.input.KeyCode;
+//import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+//import javafx.scene.shape.Circle;
+//import javafx.scene.shape.Rectangle;
+//import javafx.scene.shape.Shape;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.lang.Math;
+//import java.util.Random;
+//import java.lang.Math;
 
 public class Breakout {
     public static final String RESOURCE_PATH = "/";
@@ -40,9 +42,9 @@ public class Breakout {
 
         //NOTE: NEED TO REPLACE ALL IMAGES EXCEPT BALL WITH PROPERLY SIZED ONES
             //CAN'T HAVE ADDITIONAL BLANK SPACE
-        ball = new Ball(20, BALL_SPEED, 30, ball_img, 50, 50);
-        paddle = new Paddle(175, 300, 75, 50, paddle_img);
-        wood_blk = new Block(100, 100, 50, 50, wood_blk_img);
+        ball = new Ball(20, BALL_SPEED, 30, ball_img, 200, 200);
+        paddle = new Paddle(175, 300, 50, 20, paddle_img);
+        wood_blk = new Block(100, 100, 50, 40, wood_blk_img);
         blocks.add(wood_blk);
 
         root.getChildren().add(ball);
@@ -55,20 +57,44 @@ public class Breakout {
     }
 
     public void step (double elapsedTime) {
-        boolean intersect = isIntersecting(blocks, paddle, ball);
-        ball.move(wWidth, wHeight, elapsedTime, intersect);
+        ArrayList<Boolean> intersect = isIntersecting(blocks, paddle, ball);
+        ball.move(wWidth, wHeight, elapsedTime, intersect.get(0), intersect.get(1));
     }
-
-    private boolean isIntersecting(ArrayList<Block> blks, Paddle p, Ball b) {
+//ERROR WHEN HIT AND BALL IS NOT COMPLETELY WITHIN BLOCK (NEAR CORNERS)
+    private ArrayList<Boolean> isIntersecting(ArrayList<Block> blks, Paddle p, Ball b) {
+        //ArrayList<Boolean> ret = new ArrayList<>();
         for (Block blk : blks) {
-            if (blk.getBoundsInParent().intersects(b.getBoundsInParent())) {
-                return true;
+            ArrayList<Boolean> ret = intersect(blk, b);
+            if (ret.get(0) || ret.get(1)){
+                return ret;
             }
         }
-        if (p.getBoundsInParent().intersects(b.getBoundsInParent())) {
-            return true;
+        return intersect(p, b);
+//        if (p.getBoundsInParent().intersects(b.getBoundsInParent())) {
+//            return true;
+//        }
+//        return false;
+    }
+
+    private ArrayList<Boolean> intersect(Node a, Node b) {
+        ArrayList<Boolean> ret = new ArrayList<>();
+        ret.add(false);
+        ret.add(false);
+        Bounds aBounds = a.getBoundsInParent();
+        Bounds bBounds = b.getBoundsInParent();
+        if (aBounds.intersects(bBounds)) {
+            if (contains(aBounds.getMinX(), aBounds.getMaxX(), bBounds.getMinX(), bBounds.getMaxX())) {
+                ret.set(0, true);
+                return ret;
+            }
+            ret.set(1, true);
+            return ret;
         }
-        return false;
+        return ret;
+    }
+
+    private boolean contains(double a1, double a2, double b1, double b2) {
+        return ((a1<b1&&a2>b2) || (b1<a1&&b2>a2));
     }
 
     // Name for a potentially complex comparison to make code more readable
