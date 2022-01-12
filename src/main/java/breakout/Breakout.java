@@ -46,8 +46,8 @@ public class Breakout {
 
         //NOTE: NEED TO REPLACE ALL IMAGES EXCEPT BALL WITH PROPERLY SIZED ONES
             //CAN'T HAVE ADDITIONAL BLANK SPACE
-        ball = new Ball(10, BALL_SPEED, 30, ball_img, 200, 200);
-        paddle = new Paddle(175, 300, 20, 7, paddle_img);
+        ball = new Ball(80, BALL_SPEED, 30, ball_img, 200, 200);
+        paddle = new Paddle(175, 360, 20, 7, paddle_img);
         wood_blk = new Block(100, 100, 30, 15, wood_blk_img);
         blk2 = new Block(250, 250, 30, 15, wood_blk_img);
         blocks.add(wood_blk);
@@ -74,6 +74,7 @@ public class Breakout {
             ArrayList<Boolean> ret = intersect(blk, b);
             if (ret.get(0) || ret.get(1)){
                 root.getChildren().remove(blk);
+                blocks.remove(blk);
                 return ret;
             }
         }
