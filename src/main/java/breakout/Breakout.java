@@ -33,11 +33,12 @@ public class Breakout {
     private ArrayList<Block> blocks = new ArrayList<>();
     private int wWidth;
     private int wHeight;
+    private Group root = new Group();
 
     public Scene setupGame(int width, int height, Paint background) {
         wWidth = width;
         wHeight = height;
-        Group root = new Group();
+        //Group root = new Group();
         Image ball_img = new Image(getClass().getResourceAsStream(BALL_IMAGE));
         Image paddle_img = new Image(getClass().getResourceAsStream(PADDLE_IMAGE));
         Image wood_blk_img = new Image(getClass().getResourceAsStream(WOOD_BLOCK_IMAGE));
@@ -68,6 +69,7 @@ public class Breakout {
         for (Block blk : blks) {
             ArrayList<Boolean> ret = intersect(blk, b);
             if (ret.get(0) || ret.get(1)){
+                root.getChildren().remove(blk);
                 return ret;
             }
         }
