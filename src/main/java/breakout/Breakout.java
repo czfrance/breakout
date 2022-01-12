@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 //import javafx.scene.image.ImageView;
 //import javafx.scene.input.KeyCode;
 //import javafx.scene.paint.Color;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Paint;
 //import javafx.scene.shape.Circle;
 //import javafx.scene.shape.Rectangle;
@@ -23,6 +24,7 @@ public class Breakout {
     public static final String PADDLE_IMAGE = RESOURCE_PATH + "paddle.png";
     public static final String WOOD_BLOCK_IMAGE = RESOURCE_PATH + "wood-block.png";
     public static final int BALL_SPEED = 80;
+    public static final int PADDLE_SPEED = 8;
 
 
     private Ball ball;
@@ -52,7 +54,7 @@ public class Breakout {
         root.getChildren().add(wood_blk);
 
         Scene scene = new Scene(root, width, height, background);
-
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         return scene;
     }
 
@@ -91,6 +93,30 @@ public class Breakout {
             return ret;
         }
         return ret;
+    }
+
+    private void handleKeyInput (KeyCode code) {
+        // NOTE new Java syntax that some prefer (but watch out for the many special cases!)
+        //   https://blog.jetbrains.com/idea/2019/02/java-12-and-intellij-idea/
+        switch (code) {
+            case RIGHT -> paddle.setX(paddle.getX() + PADDLE_SPEED);
+            case LEFT -> paddle.setX(paddle.getX() - PADDLE_SPEED);
+            case UP -> paddle.setY(paddle.getY() - PADDLE_SPEED);
+            case DOWN -> paddle.setY(paddle.getY() + PADDLE_SPEED);
+        }
+        // TYPICAL way to do it, definitely more readable for longer actions
+//        if (code == KeyCode.RIGHT) {
+//            myMover.setX(myMover.getX() + MOVER_SPEED);
+//        }
+//        else if (code == KeyCode.LEFT) {
+//            myMover.setX(myMover.getX() - MOVER_SPEED);
+//        }
+//        else if (code == KeyCode.UP) {
+//            myMover.setY(myMover.getY() - MOVER_SPEED);
+//        }
+//        else if (code == KeyCode.DOWN) {
+//            myMover.setY(myMover.getY() + MOVER_SPEED);
+//        }
     }
 
     private boolean contains(double a1, double a2, double b1, double b2) {

@@ -16,6 +16,5 @@ public class Paddle extends Rectangle {
     public Paddle (double x, double y, double w, double h, Image img) {
         super(x, y, w, h);
         super.setFill(new ImagePattern(img));
-
     }
 }
