@@ -3,13 +3,11 @@ package breakout;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-
 import java.lang.Math;
 
 public class Ball extends ImageView{
     int speed;
     double angle;
-    //boolean right;
 
     public Ball (int sz, int sp, double a, Image im, double x, double y){
         super(im);
@@ -23,7 +21,6 @@ public class Ball extends ImageView{
 
     public void move(int w, int h, double elapsedTime, boolean intersectHoriz, boolean intersectVert) {
         if (onVertBorder(w) || intersectVert) {
-            //right = !right;
             if (angle <= 180) {
                 angle = 180 - angle;
             } else {

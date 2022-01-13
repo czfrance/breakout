@@ -13,10 +13,7 @@ import javafx.scene.paint.Paint;
 //import javafx.scene.shape.Circle;
 //import javafx.scene.shape.Rectangle;
 //import javafx.scene.shape.Shape;
-
 import java.util.ArrayList;
-//import java.util.Random;
-//import java.lang.Math;
 
 public class Breakout {
     public static final String RESOURCE_PATH = "/";
@@ -25,7 +22,6 @@ public class Breakout {
     public static final String WOOD_BLOCK_IMAGE = RESOURCE_PATH + "wood-block.png";
     public static final int BALL_SPEED = 80;
     public static final int PADDLE_SPEED = 8;
-
 
     private Ball ball;
     private Paddle paddle;
@@ -46,8 +42,8 @@ public class Breakout {
 
         //NOTE: NEED TO REPLACE ALL IMAGES EXCEPT BALL WITH PROPERLY SIZED ONES
             //CAN'T HAVE ADDITIONAL BLANK SPACE
-        ball = new Ball(80, BALL_SPEED, 30, ball_img, 200, 200);
-        paddle = new Paddle(175, 360, 20, 7, paddle_img);
+        ball = new Ball(50, BALL_SPEED, 30, ball_img, 200, 200);
+        paddle = new Paddle(175, 360, 50, 20, paddle_img);
         wood_blk = new Block(100, 100, 30, 15, wood_blk_img);
         blk2 = new Block(250, 250, 30, 15, wood_blk_img);
         blocks.add(wood_blk);
@@ -69,7 +65,6 @@ public class Breakout {
     }
 //ERROR WHEN HIT AND BALL IS NOT COMPLETELY WITHIN BLOCK (NEAR CORNERS)
     private ArrayList<Boolean> isIntersecting(ArrayList<Block> blks, Paddle p, Ball b) {
-        //ArrayList<Boolean> ret = new ArrayList<>();
         for (Block blk : blks) {
             ArrayList<Boolean> ret = intersect(blk, b);
             if (ret.get(0) || ret.get(1)){
@@ -79,10 +74,6 @@ public class Breakout {
             }
         }
         return intersect(p, b);
-//        if (p.getBoundsInParent().intersects(b.getBoundsInParent())) {
-//            return true;
-//        }
-//        return false;
     }
 
     private ArrayList<Boolean> intersect(Node a, Node b) {
@@ -102,38 +93,28 @@ public class Breakout {
         return ret;
     }
 
-    private void handleKeyInput (KeyCode code) {
-        // NOTE new Java syntax that some prefer (but watch out for the many special cases!)
-        //   https://blog.jetbrains.com/idea/2019/02/java-12-and-intellij-idea/
-        switch (code) {
-            case RIGHT -> paddle.setX(paddle.getX() + PADDLE_SPEED);
-            case LEFT -> paddle.setX(paddle.getX() - PADDLE_SPEED);
-            case UP -> paddle.setY(paddle.getY() - PADDLE_SPEED);
-            case DOWN -> paddle.setY(paddle.getY() + PADDLE_SPEED);
-        }
-        // TYPICAL way to do it, definitely more readable for longer actions
-//        if (code == KeyCode.RIGHT) {
-//            myMover.setX(myMover.getX() + MOVER_SPEED);
-//        }
-//        else if (code == KeyCode.LEFT) {
-//            myMover.setX(myMover.getX() - MOVER_SPEED);
-//        }
-//        else if (code == KeyCode.UP) {
-//            myMover.setY(myMover.getY() - MOVER_SPEED);
-//        }
-//        else if (code == KeyCode.DOWN) {
-//            myMover.setY(myMover.getY() + MOVER_SPEED);
-//        }
-    }
-
     private boolean contains(double a1, double a2, double b1, double b2) {
         return ((a1<b1&&a2>b2) || (b1<a1&&b2>a2));
     }
 
-    // Name for a potentially complex comparison to make code more readable
-//    private boolean isIntersecting (Bouncer a, Rectangle b) {
-//        // with images can only check bounding box (as it is calculated in container with other objects)
-//        return b.getBoundsInParent().intersects(a.getBoundsInParent());
-//        // with shapes, can check precisely (in this case, it is easy because the image is circular)
-//    }
+    private void handleKeyInput (KeyCode code) {
+        switch (code) {
+            case RIGHT -> paddle.setX(newPaddleX(true));
+            case LEFT -> paddle.setX(newPaddleX(false));
+            case UP, DOWN -> paddle.setX(paddle.getX());
+        }
+    }
+
+    private double newPaddleX(boolean right) {
+        if (right && !paddle.atBorder(wWidth, true)) {
+            return paddle.getX() + PADDLE_SPEED;
+        }
+        else if ((!right) && !paddle.atBorder(wWidth, false)) {
+            return paddle.getX() - PADDLE_SPEED;
+        }
+        else {
+            return paddle.getX();
+        }
+    }
+
 }

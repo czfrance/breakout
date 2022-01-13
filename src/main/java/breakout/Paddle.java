@@ -15,6 +15,14 @@ public class Paddle extends Rectangle {
 
     public Paddle (double x, double y, double w, double h, Image img) {
         super(x, y, w, h);
+        image = img;
         super.setFill(new ImagePattern(img));
+    }
+
+    public boolean atBorder(int w, boolean rightBorder) {
+        if (rightBorder) {
+            return this.getX() >= (w - this.getWidth());
+        }
+        return this.getX() <= 0;
     }
 }
