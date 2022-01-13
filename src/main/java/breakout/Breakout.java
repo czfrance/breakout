@@ -40,8 +40,6 @@ public class Breakout {
         Image paddle_img = new Image(getClass().getResourceAsStream(PADDLE_IMAGE));
         Image wood_blk_img = new Image(getClass().getResourceAsStream(WOOD_BLOCK_IMAGE));
 
-        //NOTE: NEED TO REPLACE ALL IMAGES EXCEPT BALL WITH PROPERLY SIZED ONES
-            //CAN'T HAVE ADDITIONAL BLANK SPACE
         ball = new Ball(50, BALL_SPEED, 30, ball_img, 200, 200);
         paddle = new Paddle(175, 360, 50, 20, paddle_img);
         wood_blk = new Block(100, 100, 30, 15, wood_blk_img);
