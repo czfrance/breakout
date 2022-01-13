@@ -58,7 +58,7 @@ could be general ideas too.
     also need to be enlarged. Effect is in place for a certain amount of time
 
  * "Hailstorm": When a key is clicked, or at some certain time after power-up is obtained, 
-    the ball will explode into ma0ny hail pieces and destroy blocks in their immediate vicinity
+    the ball will explode into many hail pieces and destroy blocks in their immediate vicinity
 
 
 ## Cheat Key Ideas

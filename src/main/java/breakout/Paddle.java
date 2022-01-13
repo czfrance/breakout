@@ -11,18 +11,19 @@ import javafx.scene.paint.Color;
  */
 
 public class Paddle extends Rectangle {
-    Image image;
 
-    public Paddle (double x, double y, double w, double h, Image img) {
-        super(x, y, w, h);
-        image = img;
-        super.setFill(new ImagePattern(img));
-    }
+  Image image;
 
-    public boolean atBorder(int w, boolean rightBorder) {
-        if (rightBorder) {
-            return this.getX() >= (w - this.getWidth());
-        }
-        return this.getX() <= 0;
+  public Paddle(double x, double y, double w, double h, Image img) {
+    super(x, y, w, h);
+    image = img;
+    super.setFill(new ImagePattern(img));
+  }
+
+  public boolean atBorder(int w, boolean rightBorder) {
+    if (rightBorder) {
+      return this.getX() >= (w - this.getWidth());
     }
+    return this.getX() <= 0;
+  }
 }

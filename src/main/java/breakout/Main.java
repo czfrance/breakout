@@ -22,22 +22,24 @@ import javafx.util.Duration;
  * @author YOUR NAME HERE
  */
 public class Main extends Application {
-    // useful names for constant values used
-    public static final String TITLE = "Breakout: Winter Wonderland";
-    public static final int SIZE = 400;
-    public static final Paint BACKGROUND = Color.LIGHTBLUE;
-    public static final int FRAMES_PER_SECOND = 60;
-    public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
 
-    // instance variables
-    private Breakout myGame;
+  // useful names for constant values used
+  public static final String TITLE = "Breakout: Winter Wonderland";
+  public static final int SIZE = 400;
+  public static final Color VERYDARKGRAY = Color.rgb(51, 51, 51);
+  public static final Paint BACKGROUND = VERYDARKGRAY;
+  public static final int FRAMES_PER_SECOND = 60;
+  public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
+
+  // instance variables
+  private Breakout myGame;
 
 
-    /**
-     * Initialize what will be displayed.
-     */
-    @Override
-    public void start (Stage stage) {
+  /**
+   * Initialize what will be displayed.
+   */
+  @Override
+  public void start(Stage stage) {
 //        Circle shape = new Circle(190, 190, 20);
 //        shape.setFill(Color.LIGHTSTEELBLUE);
 //
@@ -50,17 +52,18 @@ public class Main extends Application {
 //        stage.setTitle(TITLE);
 //        stage.show();
 
-        myGame = new Breakout();
+    myGame = new Breakout();
 
-        // attach scene to the stage and display it
-        Scene scene = myGame.setupGame(SIZE, SIZE, BACKGROUND);
-        stage.setScene(scene);
-        stage.setTitle(TITLE);
-        stage.show();
-        // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
-        Timeline animation = new Timeline();
-        animation.setCycleCount(Timeline.INDEFINITE);
-        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
-        animation.play();
-    }
+    // attach scene to the stage and display it
+    Scene scene = myGame.setupGame(SIZE, SIZE, BACKGROUND);
+    stage.setScene(scene);
+    stage.setTitle(TITLE);
+    stage.show();
+    // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
+    Timeline animation = new Timeline();
+    animation.setCycleCount(Timeline.INDEFINITE);
+    animation.getKeyFrames()
+        .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
+    animation.play();
+  }
 }
