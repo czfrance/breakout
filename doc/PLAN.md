@@ -41,7 +41,7 @@ could be general ideas too.
 
  * Multiple hits to destroy (different level of blocks = different amount of hits)
 
- * "Snow Angel Blocks": blocks that when destroyed, turn other blocks into brittle ones, which
+ * "Snow Angel Blocks": blocks that when destroyed, turn other blocks into iced ones, which
     will require fewer hits to break
 
  * "Black Ice": blocks that are more similar in coloration to the background, so they're harder
@@ -69,7 +69,7 @@ could be general ideas too.
 
  * (e) Enlarge paddle
 
- * (d) "Deep Freeze": All blocks turn brittle and require fewer hits to break
+ * (d) "Deep Freeze": All blocks turn brittle/become iced and require fewer hits to break
 
 
 ## Level Descriptions

@@ -25,7 +25,8 @@ public class Main extends Application {
 
   // useful names for constant values used
   public static final String TITLE = "Breakout: Winter Wonderland";
-  public static final int SIZE = 400;
+  public static final int WIDTH = 400;
+  public static final int HEIGHT = WIDTH + 100;
   public static final Color VERYDARKGRAY = Color.rgb(51, 51, 51);
   public static final Paint BACKGROUND = VERYDARKGRAY;
   public static final int FRAMES_PER_SECOND = 60;
@@ -40,22 +41,10 @@ public class Main extends Application {
    */
   @Override
   public void start(Stage stage) {
-//        Circle shape = new Circle(190, 190, 20);
-//        shape.setFill(Color.LIGHTSTEELBLUE);
-//
-//        Group root = new Group();
-//        root.getChildren().add(shape);
-//
-//        Scene scene = new Scene(root, SIZE, SIZE, Color.GRAY);
-//        stage.setScene(scene);
-//
-//        stage.setTitle(TITLE);
-//        stage.show();
-
     myGame = new Breakout();
 
     // attach scene to the stage and display it
-    Scene scene = myGame.setupGame(SIZE, SIZE, BACKGROUND);
+    Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND);
     stage.setScene(scene);
     stage.setTitle(TITLE);
     stage.show();

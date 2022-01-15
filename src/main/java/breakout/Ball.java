@@ -7,15 +7,15 @@ import java.lang.Math;
 
 public class Ball extends ImageView {
 
-  int speed;
-  double angle;
+  private int speed;
+  private double angle;
 
   public Ball(int sz, int sp, double a, Image im, double x, double y) {
     super(im);
-    super.setFitWidth(sz);
-    super.setFitHeight(sz);
-    super.setX(x);
-    super.setY(y);
+    this.setFitWidth(sz);
+    this.setFitHeight(sz);
+    this.setX(x);
+    this.setY(y);
     speed = sp;
     angle = a;
   }
@@ -44,5 +44,9 @@ public class Ball extends ImageView {
 
   private boolean onHorizBorder(int h) {
     return this.getY() >= (h - this.getFitHeight()) || this.getY() <= 0;
+  }
+
+  public boolean lostLife(int h) {
+    return this.getY() >= (h - this.getFitHeight());
   }
 }

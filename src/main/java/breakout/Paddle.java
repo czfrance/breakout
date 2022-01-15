@@ -12,12 +12,13 @@ import javafx.scene.paint.Color;
 
 public class Paddle extends Rectangle {
 
-  Image image;
+  private Image[] images;
+  //private int
 
-  public Paddle(double x, double y, double w, double h, Image img) {
+  public Paddle(double x, double y, double w, double h, Image[] imgs) {
     super(x, y, w, h);
-    image = img;
-    super.setFill(new ImagePattern(img));
+    images = imgs;
+    this.setFill(new ImagePattern(images[0]));
   }
 
   public boolean atBorder(int w, boolean rightBorder) {
@@ -25,5 +26,23 @@ public class Paddle extends Rectangle {
       return this.getX() >= (w - this.getWidth());
     }
     return this.getX() <= 0;
+  }
+
+  public double newPaddleX(boolean right, int width, int speed) {
+    if (right && !this.atBorder(width, true)) {
+      return this.getX() + speed;
+    } else if ((!right) && !this.atBorder(width, false)) {
+      return this.getX() - speed;
+    } else {
+      return this.getX();
+    }
+  }
+
+  public void makeSlippery() {
+    this.setFill(new ImagePattern(images[1]));
+  }
+
+  private void updatePaddle() {
+
   }
 }
