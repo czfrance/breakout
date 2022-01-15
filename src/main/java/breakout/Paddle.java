@@ -11,10 +11,12 @@ import javafx.scene.paint.Color;
  */
 
 public class Paddle extends Rectangle {
-  private static final double DEVIATION_INCREMENT = 0.01;
+  private static final double MAX_DEVIATION = 0.5;
+  private static final double DEVIATION_INCREMENT = 0.016; //31.25 bounces to get to full deviation
 
   private Image[] images;
   private double percentDeviationRange = 0;
+  private boolean slippery = false;
 
   public Paddle(double x, double y, double w, double h, Image[] imgs) {
     super(x, y, w, h);
@@ -40,17 +42,22 @@ public class Paddle extends Rectangle {
   }
 
   public void hit() {
-    if (percentDeviationRange < 0.5-DEVIATION_INCREMENT) {
-      percentDeviationRange += 0.02;
+    if (percentDeviationRange < MAX_DEVIATION-DEVIATION_INCREMENT) {
+      percentDeviationRange += DEVIATION_INCREMENT;
     }
   }
 
   public void makeSlippery() {
+    slippery = true;
     this.setFill(new ImagePattern(images[1]));
   }
 
   public double getPercentDeviation() {
     return percentDeviationRange;
+  }
+
+  public boolean isSlippery() {
+    return slippery;
   }
 
 }

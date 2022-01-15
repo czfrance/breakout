@@ -18,11 +18,11 @@ import java.util.Random;
 /*
     TODOS:
        1 **Figure out how to get bounce correctly
-       2 Implement paddle count system -> randomness of bounce back depends on # bounces
+      .  2 Implement paddle count system -> randomness of bounce back depends on # bounces
            * need to differentiate block bounce from paddle?
       . 3 get all blocks, paddles, balls images
       . 4 read from picture files
-       5 game end when touch ball bottom of screen
+      . 5 game end when touch ball bottom of screen
       . 6 block hit counter
       . 7 get blocks to move
       . 8 life & block destroyed counter
@@ -69,9 +69,9 @@ public class Breakout {
   public static final String ANGEL_ICED_IMAGE = RESOURCE_PATH + "gold-iced.png";
   public static final String BLACK_ICED_IMAGE = RESOURCE_PATH + "carbon-fiber-iced.png";
   public static final String MAP_FILE = "src/main/resources/test.txt";
-  public static final int BALL_SPEED = 300;
+  public static final int BALL_SPEED = 150;
   public static final int BALL_SIZE = 10;
-  public static final int INIT_BALL_ANGLE = 30;
+  public static final int INIT_BALL_ANGLE = 90; //default to 75
   public static final int PADDLE_SPEED = 8;
   public static final int PADDLE_HEIGHT = 10;
   public static final int PADDLE_WIDTH = 75;
@@ -104,6 +104,7 @@ public class Breakout {
         wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1));
     paddle = new Paddle(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT,
         PADDLE_WIDTH, PADDLE_HEIGHT, paddle_imgs);
+    paddle.makeSlippery();
     try {
       blocks = buildMap(MAP_FILE);
     } catch (IOException e) {
@@ -169,6 +170,7 @@ public class Breakout {
     if (paddleIntersect.contains(true)) {
       p.hit();
       b.deviatePath(p.getPercentDeviation());
+      if (p.isSlippery()) {b.slip();}
     }
     return paddleIntersect;
   }

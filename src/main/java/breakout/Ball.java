@@ -7,7 +7,8 @@ import java.lang.Math;
 import java.util.Random;
 
 public class Ball extends ImageView {
-
+  private static final int SLIP_ANGLE = 10;
+  private static final int MIN_BALL_ANGLE = 10;
   private int speed;
   private double angle;
 
@@ -52,26 +53,30 @@ public class Ball extends ImageView {
     double maxDeviation = percentDev * 180;
     double minAngle = angle - maxDeviation;
     double idk = rand.nextDouble(maxDeviation*2);
-    angle = calcNewAngle(idk, minAngle);
+    angle = calcNewDeviationAngle(idk, minAngle);
   }
 
-  private double calcNewAngle(double value, double minAngle) {
-    double newAngle = minAngle + value;
-    if (angle < 180) {
-      if (newAngle <= 0) {
-        return 1;
-      }
-      else if (newAngle >= 180) {
-        return 179;
-      }
+  public void slip() {
+    //angle of ball coming into paddle is always between 180 and 360
+    double newAngle;
+    if (angle < 270) {
+      newAngle = angle-SLIP_ANGLE;
+      angle = (newAngle > 180+MIN_BALL_ANGLE) ? newAngle : 180+MIN_BALL_ANGLE+1;
     }
-    else {
-      if (newAngle <= 180) {
-        return 181;
-      }
-      else if (newAngle >= 360) {
-        return 359;
-      }
+    else if (angle < 270) {
+      newAngle = angle+SLIP_ANGLE;
+      angle = (newAngle < 360-MIN_BALL_ANGLE) ? newAngle : 360-MIN_BALL_ANGLE-1;
+    }
+  }
+
+  private double calcNewDeviationAngle(double value, double minAngle) {
+    //angle of ball coming into paddle is always between 180 and 360
+    double newAngle = minAngle + value;
+
+    if (newAngle <= 180 + MIN_BALL_ANGLE) {
+      return 180 + MIN_BALL_ANGLE + 1;
+    } else if (newAngle >= 360 - MIN_BALL_ANGLE) {
+      return 360 - MIN_BALL_ANGLE - 1;
     }
     return newAngle;
   }

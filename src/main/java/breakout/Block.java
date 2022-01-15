@@ -39,8 +39,8 @@ public class Block extends Rectangle {
       angle = 360 - angle;
     }
 
-    this.setX(this.getX() + (currSpeed * speedFraction * Math.cos(Math.toRadians(angle))) * elapsedTime);
-    this.setY(this.getY() - (currSpeed * speedFraction * Math.sin(Math.toRadians(angle))) * elapsedTime);
+    this.setX(this.getX() + (currSpeed*speedFraction*Math.cos(Math.toRadians(angle)))*elapsedTime);
+    this.setY(this.getY() - (currSpeed*speedFraction*Math.sin(Math.toRadians(angle)))*elapsedTime);
 
     if (speedFraction < 1) {speedFraction += 0.0001;}
   }
