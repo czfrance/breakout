@@ -71,6 +71,7 @@ public class Breakout {
   public static final String MAP_FILE = "src/main/resources/test.txt";
   public static final int BALL_SPEED = 300;
   public static final int BALL_SIZE = 10;
+  public static final int INIT_BALL_ANGLE = 30;
   public static final int PADDLE_SPEED = 8;
   public static final int PADDLE_HEIGHT = 10;
   public static final int PADDLE_WIDTH = 75;
@@ -99,7 +100,7 @@ public class Breakout {
     Image[] paddle_imgs = {new Image(getClass().getResourceAsStream(PADDLE_IMAGE)),
         new Image(getClass().getResourceAsStream(PADDLE_SLIP_IMAGE))};
 
-    ball = new Ball(BALL_SIZE, BALL_SPEED, 30, ball_img,
+    ball = new Ball(BALL_SIZE, BALL_SPEED, INIT_BALL_ANGLE, ball_img,
         wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1));
     paddle = new Paddle(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT,
         PADDLE_WIDTH, PADDLE_HEIGHT, paddle_imgs);
@@ -124,22 +125,25 @@ public class Breakout {
     return scene;
   }
 
-  public void step(double elapsedTime) {
-    List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
-    ball.move(wWidth, wHeight, elapsedTime, intersect.get(0), intersect.get(1));
+  public void moveBlocks(double elapsedTime) {
     for (List<Block> blkRow : blocks) {
       for (Block blk : blkRow) {
         if (blk != null) {
           blk.move(wWidth, wWidth, elapsedTime);
-          //System.out.printf("(%d, %d)\n", blk.getX(), blk.getY());
         }
       }
     }
+  }
+
+  public void step(double elapsedTime) {
+    List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
+    ball.move(wWidth, wHeight, elapsedTime, intersect.get(0), intersect.get(1));
+    moveBlocks(elapsedTime);
+
     if (ball.lostLife(wHeight)) {
       livesLeft--;
       System.out.printf("lost a life, %d lives left\n", livesLeft);
     }
-
     checkLost();
   }
 
@@ -161,7 +165,12 @@ public class Breakout {
         }
       }
     }
-    return intersect(p, b);
+    List<Boolean> paddleIntersect = intersect(p, b);
+    if (paddleIntersect.contains(true)) {
+      p.hit();
+      b.deviatePath(p.getPercentDeviation());
+    }
+    return paddleIntersect;
   }
 
   private List<Boolean> intersect(Node a, Node b) {

@@ -11,9 +11,10 @@ import javafx.scene.paint.Color;
  */
 
 public class Paddle extends Rectangle {
+  private static final double DEVIATION_INCREMENT = 0.01;
 
   private Image[] images;
-  //private int
+  private double percentDeviationRange = 0;
 
   public Paddle(double x, double y, double w, double h, Image[] imgs) {
     super(x, y, w, h);
@@ -38,11 +39,18 @@ public class Paddle extends Rectangle {
     }
   }
 
+  public void hit() {
+    if (percentDeviationRange < 0.5-DEVIATION_INCREMENT) {
+      percentDeviationRange += 0.02;
+    }
+  }
+
   public void makeSlippery() {
     this.setFill(new ImagePattern(images[1]));
   }
 
-  private void updatePaddle() {
-
+  public double getPercentDeviation() {
+    return percentDeviationRange;
   }
+
 }

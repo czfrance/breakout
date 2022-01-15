@@ -4,6 +4,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import java.lang.Math;
+import java.util.Random;
 
 public class Ball extends ImageView {
 
@@ -44,6 +45,35 @@ public class Ball extends ImageView {
 
   private boolean onHorizBorder(int h) {
     return this.getY() >= (h - this.getFitHeight()) || this.getY() <= 0;
+  }
+
+  public void deviatePath(double percentDev) {
+    Random rand = new Random();
+    double maxDeviation = percentDev * 180;
+    double minAngle = angle - maxDeviation;
+    double idk = rand.nextDouble(maxDeviation*2);
+    angle = calcNewAngle(idk, minAngle);
+  }
+
+  private double calcNewAngle(double value, double minAngle) {
+    double newAngle = minAngle + value;
+    if (angle < 180) {
+      if (newAngle <= 0) {
+        return 1;
+      }
+      else if (newAngle >= 180) {
+        return 179;
+      }
+    }
+    else {
+      if (newAngle <= 180) {
+        return 181;
+      }
+      else if (newAngle >= 360) {
+        return 359;
+      }
+    }
+    return newAngle;
   }
 
   public boolean lostLife(int h) {
