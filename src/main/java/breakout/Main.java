@@ -25,7 +25,7 @@ public class Main extends Application {
 
   // useful names for constant values used
   public static final String TITLE = "Breakout: Winter Wonderland";
-  public static final int WIDTH = 400;
+  public static final int WIDTH = 600;
   public static final int HEIGHT = WIDTH + 100;
   public static final Color VERYDARKGRAY = Color.rgb(51, 51, 51);
   public static final Paint BACKGROUND = VERYDARKGRAY;

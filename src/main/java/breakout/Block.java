@@ -3,13 +3,11 @@ package breakout;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 public class Block extends Rectangle {
   private Image[] images;
   private int hitsToBreak;
   private boolean isIced = false;
-  private boolean isBroken;
   private int speed;
   private int currSpeed;
   private double angle;
@@ -68,6 +66,12 @@ public class Block extends Rectangle {
 
   public void makeIced() {
     this.setFill(new ImagePattern(images[1]));
+    isIced = true;
+  }
+
+  public void unIce() {
+    this.setFill(new ImagePattern(images[0]));
+    isIced = false;
   }
 
   public void freeze() {

@@ -41,7 +41,7 @@ could be general ideas too.
 
  * Multiple hits to destroy (different level of blocks = different amount of hits)
 
- * "Snow Angel Blocks": blocks that when destroyed, turn other blocks into iced ones, which
+ * "Snow Angel Blocks": blocks that when destroyed, turn blocks near it into iced ones, which
     will require fewer hits to break
 
  * "Black Ice": blocks that are more similar in coloration to the background, so they're harder
@@ -51,14 +51,17 @@ could be general ideas too.
 
 ## Power-up Ideas
 
- * "Winter Freeze": All blocks, or the blocks within a certain range, freeze in place for a certain
-    amount of time. 
+ * "Winter Freeze": All blocks freeze in place for a certain amount of time. 
 
  * "Avalanche": Ball becomes larger, similar to a snowball being rolled up. The paddle would probably
     also need to be enlarged. Effect is in place for a certain amount of time
 
- * "Hailstorm": When a key is clicked, or at some certain time after power-up is obtained, 
-    the ball will explode into many hail pieces and destroy blocks in their immediate vicinity
+ * "Spread the Holiday Cheer": Blocks near the black ice block will get destroyed, regardless of 
+   the amount of hits left to break them
+   * Note: power-ups can only be obtained from black ice blocks
+
+ * "Deep Freeze": All blocks turn brittle/become iced and require fewer hits to break
+   * Note: this is only available as a cheat key feature
 
 
 ## Cheat Key Ideas

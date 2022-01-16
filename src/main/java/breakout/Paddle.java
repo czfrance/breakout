@@ -47,13 +47,20 @@ public class Paddle extends Rectangle {
     }
   }
 
-  public void makeSlippery() {
-    slippery = true;
-    this.setFill(new ImagePattern(images[1]));
+  public void makeSlippery(boolean active) {
+    if (active) {
+      slippery = true;
+      this.setFill(new ImagePattern(images[1]));
+    }
+    else {
+      slippery = false;
+      this.setFill(new ImagePattern(images[0]));
+    }
   }
 
   public double getPercentDeviation() {
-    return percentDeviationRange;
+    return 0;
+    //return percentDeviationRange;
   }
 
   public boolean isSlippery() {

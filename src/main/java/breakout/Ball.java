@@ -2,7 +2,6 @@ package breakout;
 
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 import java.lang.Math;
 import java.util.Random;
 
@@ -11,6 +10,8 @@ public class Ball extends ImageView {
   private static final int MIN_BALL_ANGLE = 10;
   private int speed;
   private double angle;
+  private int size;
+  private int avalancheSize;
 
   public Ball(int sz, int sp, double a, Image im, double x, double y) {
     super(im);
@@ -20,6 +21,8 @@ public class Ball extends ImageView {
     this.setY(y);
     speed = sp;
     angle = a;
+    size = sz;
+    avalancheSize = sz * 2;
   }
 
   public void move(int w, int h, double elapsedTime, boolean intersectHoriz,
@@ -52,8 +55,9 @@ public class Ball extends ImageView {
     Random rand = new Random();
     double maxDeviation = percentDev * 180;
     double minAngle = angle - maxDeviation;
-    double idk = rand.nextDouble(maxDeviation*2);
-    angle = calcNewDeviationAngle(idk, minAngle);
+    //double angleDev = rand.nextDouble(maxDeviation*2+1);
+    double angleDev = (double) rand.nextInt(1);
+    angle = calcNewDeviationAngle(angleDev, minAngle);
   }
 
   public void slip() {
@@ -83,5 +87,15 @@ public class Ball extends ImageView {
 
   public boolean lostLife(int h) {
     return this.getY() >= (h - this.getFitHeight());
+  }
+
+  public void makeAvalanche() {
+    this.setFitWidth(avalancheSize);
+    this.setFitHeight(avalancheSize);
+  }
+
+  public void unAvalanche() {
+    this.setFitWidth(size);
+    this.setFitHeight(size);
   }
 }

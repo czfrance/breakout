@@ -1,5 +1,6 @@
 package breakout;
 
+import java.util.Arrays;
 import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
@@ -14,7 +15,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Random;
-
+//RULE: ONLY ONE POWERUP AT A TIME
 /*
     TODOS:
        1 **Figure out how to get bounce correctly
@@ -26,11 +27,12 @@ import java.util.Random;
       . 6 block hit counter
       . 7 get blocks to move
       . 8 life & block destroyed counter
-       9 slippery paddle
+      . 9 slippery paddle
       x 10 specials flurries
-       11 Block specials
+      . 11 Block specials
             * snow angel, black ice
-       12 all power ups + deep freeze
+      . 12 all power ups + deep freeze
+        12.5 check all powerups, disadvantages
        13 planned cheat keys
        14 different game screens
        15 add additional cheat keys
@@ -41,9 +43,9 @@ import java.util.Random;
       . * pre-reqs (preparing all materials & images)
       . * general game operations (when game end, creating pictures, counters)
        * game screens
-       * blocks
-       * paddles
-       * power ups
+      . * blocks
+      . * paddles
+      . * power ups
        * cheat keys
        * format & document
  */
@@ -59,17 +61,17 @@ public class Breakout {
   public static final String STEEL_IMAGE = RESOURCE_PATH + "steel.png";
   public static final String CONCRETE_IMAGE = RESOURCE_PATH + "concrete.png";
   public static final String ICE_IMAGE = RESOURCE_PATH + "ice.png";
-  public static final String ANGEL_IMAGE = RESOURCE_PATH + "gold.png";
+  public static final String SNOW_ANGEL_IMAGE = RESOURCE_PATH + "gold.png";
   public static final String BLACK_IMAGE = RESOURCE_PATH + "carbon-fiber.png";
   public static final String WOOD_ICED_IMAGE = RESOURCE_PATH + "wood-iced.png";
   public static final String BRICK_ICED_IMAGE = RESOURCE_PATH + "brick-iced.png";
   public static final String STEEL_ICED_IMAGE = RESOURCE_PATH + "steel-iced.png";
   public static final String CONCRETE_ICED_IMAGE = RESOURCE_PATH + "concrete-iced.png";
   public static final String ICE_ICED_IMAGE = RESOURCE_PATH + "ice-iced.png";
-  public static final String ANGEL_ICED_IMAGE = RESOURCE_PATH + "gold-iced.png";
+  public static final String SNOW_ANGEL_ICED_IMAGE = RESOURCE_PATH + "gold-iced.png";
   public static final String BLACK_ICED_IMAGE = RESOURCE_PATH + "carbon-fiber-iced.png";
   public static final String MAP_FILE = "src/main/resources/test.txt";
-  public static final int BALL_SPEED = 150;
+  public static final int BALL_SPEED = 300;
   public static final int BALL_SIZE = 10;
   public static final int INIT_BALL_ANGLE = 90; //default to 75
   public static final int PADDLE_SPEED = 8;
@@ -78,12 +80,26 @@ public class Breakout {
   public static final int BASE_BLOCK_SPEED = 0;
   public static final int BLOCK_SPEED_INC = 5;
   public static final int NUM_LIVES = 5;
+  public static final List<String> POWERUPS =
+      Arrays.asList("winter freeze", "avalanche", "spread the holiday cheer");
+  public static final List<String> DISADVGS = Arrays.asList("slippery paddle");
+  public static final int POWERUP_TIME_LIMIT = 5;
+  public static final int DISADV_TIME_LIMIT = 5;
+
 
   private int blockWidth;
   private int blockHeight;
   private int level;
   private int livesLeft = NUM_LIVES;
   private int blocksBroken = 0;
+  private int blocksHit = 0;
+  private int powerUpTimer = 0;
+  private int disAdvTimer = 0;
+  private String powerUpActive = null;
+  private double powerUpActiveTime = 0;
+  private String disAdvActive = null;
+  private double disAdvActiveTime = 0;
+
 
   private Ball ball;
   private Paddle paddle;
@@ -104,7 +120,7 @@ public class Breakout {
         wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1));
     paddle = new Paddle(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT,
         PADDLE_WIDTH, PADDLE_HEIGHT, paddle_imgs);
-    paddle.makeSlippery();
+    //paddle.makeSlippery();
     try {
       blocks = buildMap(MAP_FILE);
     } catch (IOException e) {
@@ -137,6 +153,7 @@ public class Breakout {
   }
 
   public void step(double elapsedTime) {
+    checkEffects(elapsedTime);
     List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
     ball.move(wWidth, wHeight, elapsedTime, intersect.get(0), intersect.get(1));
     moveBlocks(elapsedTime);
@@ -148,6 +165,25 @@ public class Breakout {
     checkLost();
   }
 
+  private void checkEffects(double elapsedTime) {
+    if (powerUpActive != null) {
+      if (powerUpActiveTime <= POWERUP_TIME_LIMIT) {
+        powerUpActiveTime += elapsedTime;
+      }
+      else {
+        stopPowerUp();
+      }
+    }
+    if (disAdvActive != null){
+      if (disAdvActiveTime <= DISADV_TIME_LIMIT) {
+        disAdvActiveTime += elapsedTime;
+      }
+      else {
+        stopDisAdv();
+      }
+    }
+  }
+
   //ERROR WHEN HIT AND BALL IS NOT COMPLETELY WITHIN BLOCK (NEAR CORNERS)
   private List<Boolean> isIntersecting(List<List<Block>> blks, Paddle p, Ball b) {
     for (int i = 0; i < blks.size(); i++) {
@@ -155,17 +191,15 @@ public class Breakout {
         Block curr = blks.get(i).get(j);
         List<Boolean> ret = intersect(curr, b);
         if (ret.get(0) || ret.get(1)) {
-          curr.hit();
+          blockIsHit(curr);
           if (curr.broken()) {
-            root.getChildren().remove(curr);
-            blocks.get(i).set(j, null);
-            blocksBroken++;
-            System.out.println(blocksBroken);
+            destroyBlock(i, j);
           }
           return ret;
         }
       }
     }
+
     List<Boolean> paddleIntersect = intersect(p, b);
     if (paddleIntersect.contains(true)) {
       p.hit();
@@ -220,8 +254,8 @@ public class Breakout {
         new Image(getClass().getResourceAsStream(CONCRETE_ICED_IMAGE))};
     Image[] ice_imgs = {new Image(getClass().getResourceAsStream(ICE_IMAGE)),
         new Image(getClass().getResourceAsStream(ICE_ICED_IMAGE))};
-    Image[] angel_imgs = {new Image(getClass().getResourceAsStream(ANGEL_IMAGE)),
-        new Image(getClass().getResourceAsStream(ANGEL_ICED_IMAGE))};
+    Image[] snow_angel_imgs = {new Image(getClass().getResourceAsStream(SNOW_ANGEL_IMAGE)),
+        new Image(getClass().getResourceAsStream(SNOW_ANGEL_ICED_IMAGE))};
     Image[] black_imgs = {new Image(getClass().getResourceAsStream(BLACK_IMAGE)),
         new Image(getClass().getResourceAsStream(BLACK_ICED_IMAGE))};
 
@@ -240,7 +274,7 @@ public class Breakout {
     blockWidth = wWidth / numCols;
     blockHeight = wWidth / numRows;
 
-    level = 2;
+    level = 0;
     int blockSpeed = BASE_BLOCK_SPEED+(level*BLOCK_SPEED_INC);
     int colIndex = 0;
     int rowIndex = 0;
@@ -272,10 +306,10 @@ public class Breakout {
         case 53 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
             rowIndex*blockHeight, blockWidth, blockHeight, steel_imgs,
             5, blockSpeed, angle));
-        case 65 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, angel_imgs,
+        case 65 -> blocks.get(rowIndex).add(colIndex, new SnowAngelBlock(colIndex*blockWidth,
+            rowIndex*blockHeight, blockWidth, blockHeight, snow_angel_imgs,
             3, blockSpeed, angle));
-        case 66 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
+        case 66 -> blocks.get(rowIndex).add(colIndex, new BlackIceBlock(colIndex*blockWidth,
             rowIndex*blockHeight, blockWidth, blockHeight, black_imgs,
             3, blockSpeed, angle));
         default -> blocks.get(rowIndex).add(colIndex, null);
@@ -290,6 +324,98 @@ public class Breakout {
       System.out.println("LOST");
       System.exit(0);
     }
+  }
+
+  private void destroyBlock(int i, int j) {
+    Block b = blocks.get(i).get(j);
+    root.getChildren().remove(b);
+    blocks.get(i).set(j, null);
+    blocksBroken++;
+    System.out.printf("blocks broken: %d\n", blocksBroken);
+    if (b instanceof SnowAngelBlock) {
+      ((SnowAngelBlock) b).iceBlocks(blocks);
+    }
+    if (b instanceof BlackIceBlock) {
+      String effect = ((BlackIceBlock) b).getEffect(POWERUPS, DISADVGS);
+      if (POWERUPS.contains(effect) && powerUpActive == null) {
+        doPowerUp(effect, b);
+      }
+      else if (disAdvActive == null) {
+        doDisAdv(effect);
+      }
+    }
+  }
+
+  private void doPowerUp(String powerup, Block b) {
+    switch (powerup) {
+      case "winter freeze" -> winterFreeze(true);
+      case "avalanche" -> avalanche(true);
+      case "spread the holiday cheer" -> spreadHolidayCheer((BlackIceBlock) b);
+      case "deep freeze" -> deepFreeze();
+    }
+    powerUpActive = powerup;
+    powerUpActiveTime = 0;
+  }
+
+  private void stopPowerUp() {
+    winterFreeze(false);
+    avalanche(false);
+    powerUpActive = null;
+    powerUpActiveTime = 0;
+  }
+
+  private void doDisAdv(String disadv) {
+    switch (disadv) {
+      case "slippery paddle" -> slipperyPaddle(true);
+    }
+
+    disAdvActive = disadv;
+    disAdvActiveTime = 0;
+  }
+
+  private void stopDisAdv() {
+    slipperyPaddle(false);
+    disAdvActive = null;
+    disAdvActiveTime = 0;
+  }
+
+  private void winterFreeze(boolean start) {
+    for (List<Block> blkRow : blocks) {
+      for (Block blk : blkRow) {
+        if (blk != null && start) { blk.freeze(); }
+        else if (blk != null && !start) { blk.unfreeze(); }
+      }
+    }
+  }
+
+  private void avalanche(boolean start) {
+    if (start) {ball.makeAvalanche();}
+    else {ball.unAvalanche();}
+  }
+
+  private void spreadHolidayCheer(BlackIceBlock blk) {
+    List<Integer[]> blocksToDestroy = blk.destroySurroundingBlocks(blocks);
+    for (Integer[] blockLocation : blocksToDestroy) {
+      destroyBlock(blockLocation[0], blockLocation[1]);
+    }
+  }
+
+  private void deepFreeze() {
+    for (List<Block> blkRow : blocks) {
+      for (Block blk : blkRow) {
+        if (blk != null) { blk.makeIced(); }
+      }
+    }
+  }
+
+  private void blockIsHit(Block b) {
+    b.hit();
+    blocksHit++;
+    System.out.printf("blocks hit: %d\n", blocksHit);
+  }
+
+  private void slipperyPaddle(boolean active) {
+    paddle.makeSlippery(active);
   }
 
 }
