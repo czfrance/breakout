@@ -37,7 +37,7 @@ public class SplashScreen {
     rules.setX(width/2 - rules.getBoundsInParent().getWidth()/2);
     rules.setY(height/4 + 2*title.getBoundsInParent().getHeight());
 
-    lvlText.setText("LEVEL " + lvl);
+    lvlText.setText("LEVEL " + lvl + getLevelName(lvl));
     lvlText.setFont(new Font(30));
     lvlText.setFill(Color.LIGHTBLUE);
     lvlText.setX(width/2 - lvlText.getBoundsInParent().getWidth()/2);
@@ -58,5 +58,13 @@ public class SplashScreen {
 
     Scene scene = new Scene(root, width, height, background);
     return scene;
+  }
+
+  private String getLevelName(int lvl) {
+    switch (lvl) {
+      case 1 -> {return ": NOVEMBER";}
+      case 2 -> {return ": DECEMBER";}
+      default -> {return ": JANUARY";}
+    }
   }
 }

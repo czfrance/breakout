@@ -62,6 +62,9 @@ public class Main extends Application {
   private void handleSplashKeyInput(KeyCode code, Stage stage) {
     switch (code) {
       case ENTER -> startBreakoutLevel(stage);
+      case DIGIT1 -> jumpToLvl(1, stage, null);
+      case DIGIT2 -> jumpToLvl(2, stage, null);
+      case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 -> jumpToLvl(3, stage, null);
     }
   }
 
@@ -76,7 +79,7 @@ public class Main extends Application {
 
   private void startBreakoutLevel(Stage stage) {
     myGame = new Breakout();
-
+    System.out.printf("currlvl: %d\n", currLvl);
     // attach scene to the stage and display it
     Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND, currLvl);
     stage.setScene(scene);
@@ -90,35 +93,37 @@ public class Main extends Application {
         .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
     animation.play();
 
-    scene.setOnKeyReleased(e -> handleBreakoutKeyInput(e.getCode(), stage));
+    scene.setOnKeyReleased(e -> handleBreakoutKeyInput(e.getCode(), stage, animation));
   }
 
-  private void handleBreakoutKeyInput(KeyCode code, Stage stage) {
-    System.out.println("handling breakout key in main");
-    System.out.println(myGame.gameIsRunning() + " " + myGame.gameIsWon());
+  private void handleBreakoutKeyInput(KeyCode code, Stage stage, Timeline animation) {
     switch(code) {
       case ENTER -> {
         if (!myGame.gameIsRunning() && !myGame.gameIsWon()) {
           win = false;
+          animation.stop();
           displayResults(stage);
         }
         else if (!myGame.gameIsRunning() && myGame.gameIsWon() && currLvl < NUM_LVLS) {
           currLvl++;
+          animation.stop();
           displaySplash(stage);
         }
         else if (!myGame.gameIsRunning() && myGame.gameIsWon() && currLvl == NUM_LVLS) {
           win = true;
+          animation.stop();
           displayResults(stage);
         }
       }
-      case DIGIT1 -> jumpToLvl(1, stage);
-      case DIGIT2 -> jumpToLvl(2, stage);
-      case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 -> jumpToLvl(3, stage);
+      case DIGIT1 -> jumpToLvl(1, stage, animation);
+      case DIGIT2 -> jumpToLvl(2, stage, animation);
+      case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 -> jumpToLvl(3, stage, animation);
     }
   }
 
-  private void jumpToLvl(int lvl, Stage stage) {
+  private void jumpToLvl(int lvl, Stage stage, Timeline animation) {
     currLvl = lvl;
+    if (animation != null) {animation.stop();}
     displaySplash(stage);
   }
 
@@ -129,29 +134,3 @@ public class Main extends Application {
     animation.play();
   }
 }
-
-//    myGame = new Breakout();
-//
-//    // attach scene to the stage and display it
-//    Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND);
-//    stage.setScene(scene);
-//    stage.setTitle(TITLE);
-//    stage.show();
-//    // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
-//    Timeline animation = new Timeline();
-//    animation.setCycleCount(Timeline.INDEFINITE);
-//    animation.getKeyFrames()
-//        .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
-//    animation.play();
-//    animation.stop();
-
-
-/*
-if (myGame.gameIsRunning()) {
-      animation.setCycleCount(Timeline.INDEFINITE);
-      animation.getKeyFrames()
-          .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
-      animation.play();
-    }
-    animation.stop();
- */

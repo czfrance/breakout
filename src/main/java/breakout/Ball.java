@@ -8,6 +8,7 @@ import java.util.Random;
 public class Ball extends ImageView {
   private static final int SLIP_ANGLE = 10;
   private static final int MIN_BALL_ANGLE = 10;
+  private static final int SPEED_INCREMENT = 30;
   private int speed;
   private double angle;
   private int size;
@@ -25,15 +26,16 @@ public class Ball extends ImageView {
     avalancheSize = sz * 2;
   }
 
-  public void setSpecifics(double x, double y, int sz) {
+  public void setSpecifics(double x, double y, int sz, int sp) {
     this.setX(x);
     this.setY(y);
     this.setFitWidth(sz);
     this.setFitHeight(sz);
+    speed = sp;
   }
 
-  public void move(int w, int h, int margin, boolean intersectHoriz,
-      boolean intersectVert, double elapsedTime) {
+  public void move(int w, int h, int margin, boolean intersectHoriz, boolean intersectVert,
+      double elapsedTime) {
     if (onVertBorder(w) || intersectVert) {
       if (angle <= 180) {
         angle = 180 - angle;
@@ -104,5 +106,9 @@ public class Ball extends ImageView {
   public void unAvalanche() {
     this.setFitWidth(size);
     this.setFitHeight(size);
+  }
+
+  public void incSpeed() {
+    speed += SPEED_INCREMENT;
   }
 }

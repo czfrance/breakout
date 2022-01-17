@@ -200,6 +200,7 @@ public class Breakout {
   }
 
   public boolean step(double elapsedTime) {
+    System.out.printf("elapsedTime: %f\n", elapsedTime);
     if (inPlay) {
       checkEffects(elapsedTime);
       List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
@@ -208,11 +209,9 @@ public class Breakout {
 
       if (ball.lostLife(wHeight)) {
         livesLeft--;
-        System.out.printf("lost a life, %d lives left\n", livesLeft);
         resetPaddleBall();
         inPlay = false;
       }
-      //checkLost();
       checkWon();
       updateText(root);
     }
@@ -220,7 +219,8 @@ public class Breakout {
   }
 
   private void resetPaddleBall() {
-    ball.setSpecifics(wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1), BALL_SIZE);
+    ball.setSpecifics(wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1),
+        BALL_SIZE, BALL_SPEED);
     paddle.setSpecifics(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT, PADDLE_WIDTH);
   }
 
@@ -297,7 +297,8 @@ public class Breakout {
       case RIGHT -> {if (inPlay) {paddle.setX(paddle.newPaddleX(true, wWidth, PADDLE_SPEED));}}
       case LEFT -> {if (inPlay) {paddle.setX(paddle.newPaddleX(false, wWidth, PADDLE_SPEED));}}
       case UP, DOWN -> paddle.setX(paddle.getX());
-      case S, L -> {livesLeft++; System.out.printf("lives left: %d\n", livesLeft);}
+      case S -> ball.incSpeed();
+      case L -> livesLeft++;
       case E -> paddle.enlargePaddle(wWidth);
       case D -> doPowerUp("deep freeze", null);
       case F -> {
@@ -305,7 +306,10 @@ public class Breakout {
         won = true;
         updateText(root);
       }
-      case R -> resetPaddleBall();
+      case R -> {
+        resetPaddleBall();
+        inPlay = false;
+      }
       case SPACE -> inPlay = true;
     }
   }
@@ -387,25 +391,16 @@ public class Breakout {
     return blocks;
   }
 
-//  private void checkLost() {
-//    if (livesLeft == 0) {
-//      System.out.println("LOST");
-//      System.exit(0);
-//    }
-//  }
-
   private void destroyBlock(int i, int j) {
     Block b = blocks.get(i).get(j);
     root.getChildren().remove(b);
     blocks.get(i).set(j, null);
     blocksBroken++;
-    System.out.printf("blocks broken: %d\n", blocksBroken);
     if (b instanceof SnowAngelBlock) {
       ((SnowAngelBlock) b).iceBlocks(blocks);
     }
     if (b instanceof BlackIceBlock) {
       String effect = ((BlackIceBlock) b).getEffect(POWERUPS, DISADVGS);
-      System.out.println(effect);
       if (POWERUPS.contains(effect) && powerUpActive == null) {
         doPowerUp(effect, b);
       }
@@ -480,7 +475,6 @@ public class Breakout {
   private void blockIsHit(Block b) {
     b.hit();
     blocksHit++;
-    System.out.printf("blocks hit: %d\n", blocksHit);
   }
 
   private void slipperyPaddle(boolean active) {
