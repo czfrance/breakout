@@ -32,10 +32,10 @@ import java.util.Random;
       . 11 Block specials
             * snow angel, black ice
       . 12 all power ups + deep freeze
-        12.5 check all powerups, disadvantages
-       13 planned cheat keys
+      .  12.5 check all powerups, disadvantages
+      . 13 planned cheat keys
        14 different game screens
-       15 add additional cheat keys
+      . 15 add additional cheat keys
        16 properly format & document everything
 
        by section:
@@ -46,7 +46,7 @@ import java.util.Random;
       . * blocks
       . * paddles
       . * power ups
-       * cheat keys
+      . * cheat keys
        * format & document
  */
 
@@ -71,9 +71,9 @@ public class Breakout {
   public static final String SNOW_ANGEL_ICED_IMAGE = RESOURCE_PATH + "gold-iced.png";
   public static final String BLACK_ICED_IMAGE = RESOURCE_PATH + "carbon-fiber-iced.png";
   public static final String MAP_FILE = "src/main/resources/test.txt";
-  public static final int BALL_SPEED = 300;
+  public static final int BALL_SPEED = 100;
   public static final int BALL_SIZE = 10;
-  public static final int INIT_BALL_ANGLE = 90; //default to 75
+  public static final int INIT_BALL_ANGLE = 75; //default to 75
   public static final int PADDLE_SPEED = 8;
   public static final int PADDLE_HEIGHT = 10;
   public static final int PADDLE_WIDTH = 75;
@@ -100,17 +100,20 @@ public class Breakout {
   private String disAdvActive = null;
   private double disAdvActiveTime = 0;
 
-
   private Ball ball;
   private Paddle paddle;
   private List<List<Block>> blocks;
   private int wWidth;
   private int wHeight;
   private Group root = new Group();
+  private boolean inPlay = true;
 
-  public Scene setupGame(int width, int height, Paint background) {
-    wWidth = width-50;
+  public Scene setupGame(int width, int height, Paint background) { //, int lvl) {
+    //level = lvl;
+    level = 0;
+    wWidth = width-2;
     wHeight = height;
+    inPlay = true;
 
     Image ball_img = new Image(getClass().getResourceAsStream(BALL_IMAGE));
     Image[] paddle_imgs = {new Image(getClass().getResourceAsStream(PADDLE_IMAGE)),
@@ -120,7 +123,6 @@ public class Breakout {
         wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1));
     paddle = new Paddle(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT,
         PADDLE_WIDTH, PADDLE_HEIGHT, paddle_imgs);
-    //paddle.makeSlippery();
     try {
       blocks = buildMap(MAP_FILE);
     } catch (IOException e) {
@@ -153,16 +155,25 @@ public class Breakout {
   }
 
   public void step(double elapsedTime) {
-    checkEffects(elapsedTime);
-    List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
-    ball.move(wWidth, wHeight, elapsedTime, intersect.get(0), intersect.get(1));
-    moveBlocks(elapsedTime);
+    if (inPlay) {
+      checkEffects(elapsedTime);
+      List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
+      ball.move(wWidth, wHeight, elapsedTime, intersect.get(0), intersect.get(1));
+      moveBlocks(elapsedTime);
 
-    if (ball.lostLife(wHeight)) {
-      livesLeft--;
-      System.out.printf("lost a life, %d lives left\n", livesLeft);
+      if (ball.lostLife(wHeight)) {
+        livesLeft--;
+        System.out.printf("lost a life, %d lives left\n", livesLeft);
+        resetPaddleBall();
+        inPlay = false;
+      }
+      checkLost();
     }
-    checkLost();
+  }
+
+  private void resetPaddleBall() {
+    ball.setSpecifics(wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1), BALL_SIZE);
+    paddle.setSpecifics(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT, PADDLE_WIDTH);
   }
 
   private void checkEffects(double elapsedTime) {
@@ -238,6 +249,16 @@ public class Breakout {
       case RIGHT -> paddle.setX(paddle.newPaddleX(true, wWidth, PADDLE_SPEED));
       case LEFT -> paddle.setX(paddle.newPaddleX(false, wWidth, PADDLE_SPEED));
       case UP, DOWN -> paddle.setX(paddle.getX());
+      case S, L -> {livesLeft++; System.out.printf("lives left: %d\n", livesLeft);}
+      case E -> paddle.enlargePaddle(wWidth);
+      case D -> doPowerUp("deep freeze", null);
+      case F -> System.out.println("level pass!");
+      case R -> resetPaddleBall();
+      case DIGIT1 -> System.out.println("level: NOVEMBER");
+      case DIGIT2 -> System.out.println("level: DECEMBER");
+      case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 ->
+          System.out.println("level: JANUARY");
+      case SPACE -> inPlay = true;
     }
   }
 
@@ -274,7 +295,6 @@ public class Breakout {
     blockWidth = wWidth / numCols;
     blockHeight = wWidth / numRows;
 
-    level = 0;
     int blockSpeed = BASE_BLOCK_SPEED+(level*BLOCK_SPEED_INC);
     int colIndex = 0;
     int rowIndex = 0;
@@ -337,6 +357,7 @@ public class Breakout {
     }
     if (b instanceof BlackIceBlock) {
       String effect = ((BlackIceBlock) b).getEffect(POWERUPS, DISADVGS);
+      System.out.println(effect);
       if (POWERUPS.contains(effect) && powerUpActive == null) {
         doPowerUp(effect, b);
       }
@@ -416,6 +437,10 @@ public class Breakout {
 
   private void slipperyPaddle(boolean active) {
     paddle.makeSlippery(active);
+  }
+
+  public boolean gameIsRunning() {
+    return livesLeft > 0;
   }
 
 }

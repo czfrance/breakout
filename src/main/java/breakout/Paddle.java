@@ -3,7 +3,6 @@ package breakout;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 /*
     RESOURCES
@@ -13,6 +12,7 @@ import javafx.scene.paint.Color;
 public class Paddle extends Rectangle {
   private static final double MAX_DEVIATION = 0.5;
   private static final double DEVIATION_INCREMENT = 0.016; //31.25 bounces to get to full deviation
+  private static final int SIZE_INCREASE = 30;
 
   private Image[] images;
   private double percentDeviationRange = 0;
@@ -22,6 +22,12 @@ public class Paddle extends Rectangle {
     super(x, y, w, h);
     images = imgs;
     this.setFill(new ImagePattern(images[0]));
+  }
+
+  public void setSpecifics(double x, double y, double w) {
+    this.setX(x);
+    this.setY(y);
+    this.setWidth(w);
   }
 
   public boolean atBorder(int w, boolean rightBorder) {
@@ -59,12 +65,25 @@ public class Paddle extends Rectangle {
   }
 
   public double getPercentDeviation() {
-    return 0;
-    //return percentDeviationRange;
+    //return 0;
+    return percentDeviationRange;
   }
 
   public boolean isSlippery() {
     return slippery;
+  }
+
+  public void enlargePaddle(int windowWidth) {
+    if (this.getWidth() < windowWidth) {
+      double newWidth = this.getWidth() + SIZE_INCREASE;
+      newWidth = (newWidth > windowWidth) ? windowWidth : newWidth;
+      this.setX(calcNewXLocation(newWidth));
+      this.setWidth(newWidth);
+    }
+  }
+
+  private double calcNewXLocation(double newWidth) {
+    return this.getX() + (this.getWidth() / 2) - (newWidth / 2);
   }
 
 }

@@ -69,11 +69,6 @@ public class Block extends Rectangle {
     isIced = true;
   }
 
-  public void unIce() {
-    this.setFill(new ImagePattern(images[0]));
-    isIced = false;
-  }
-
   public void freeze() {
     currSpeed = 0;
   }

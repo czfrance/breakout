@@ -25,6 +25,13 @@ public class Ball extends ImageView {
     avalancheSize = sz * 2;
   }
 
+  public void setSpecifics(double x, double y, int sz) {
+    this.setX(x);
+    this.setY(y);
+    this.setFitWidth(sz);
+    this.setFitHeight(sz);
+  }
+
   public void move(int w, int h, double elapsedTime, boolean intersectHoriz,
       boolean intersectVert) {
     if (onVertBorder(w) || intersectVert) {
@@ -55,8 +62,8 @@ public class Ball extends ImageView {
     Random rand = new Random();
     double maxDeviation = percentDev * 180;
     double minAngle = angle - maxDeviation;
-    //double angleDev = rand.nextDouble(maxDeviation*2+1);
-    double angleDev = (double) rand.nextInt(1);
+    double angleDev = rand.nextDouble(maxDeviation*2+1);
+    //double angleDev = (double) rand.nextInt(1);
     angle = calcNewDeviationAngle(angleDev, minAngle);
   }
 
