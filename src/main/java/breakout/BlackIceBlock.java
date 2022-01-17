@@ -22,7 +22,7 @@ public class BlackIceBlock extends Block {
       return powerups.get(powerup);
     }
     else {
-      int disAdv = rand.nextInt(powerups.size());
+      int disAdv = rand.nextInt(disAdvgs.size());
       return disAdvgs.get(disAdv);
     }
   }

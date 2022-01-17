@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import java.util.ArrayList;
 import java.io.FileNotFoundException;
@@ -15,6 +16,8 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Random;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 //RULE: ONLY ONE POWERUP AT A TIME
 /*
     TODOS:
@@ -70,7 +73,7 @@ public class Breakout {
   public static final String ICE_ICED_IMAGE = RESOURCE_PATH + "ice-iced.png";
   public static final String SNOW_ANGEL_ICED_IMAGE = RESOURCE_PATH + "gold-iced.png";
   public static final String BLACK_ICED_IMAGE = RESOURCE_PATH + "carbon-fiber-iced.png";
-  public static final String MAP_FILE = "src/main/resources/test.txt";
+  public static final String MAP_FILE = "src/main/resources/january.txt";
   public static final int BALL_SPEED = 100;
   public static final int BALL_SIZE = 10;
   public static final int INIT_BALL_ANGLE = 75; //default to 75
@@ -85,6 +88,7 @@ public class Breakout {
   public static final List<String> DISADVGS = Arrays.asList("slippery paddle");
   public static final int POWERUP_TIME_LIMIT = 5;
   public static final int DISADV_TIME_LIMIT = 5;
+  public static final int TEXT_MARGIN_SIZE = 25;
 
 
   private int blockWidth;
@@ -95,9 +99,9 @@ public class Breakout {
   private int blocksHit = 0;
   private int powerUpTimer = 0;
   private int disAdvTimer = 0;
-  private String powerUpActive = null;
+  private String powerUpActive;
   private double powerUpActiveTime = 0;
-  private String disAdvActive = null;
+  private String disAdvActive;
   private double disAdvActiveTime = 0;
 
   private Ball ball;
@@ -106,14 +110,42 @@ public class Breakout {
   private int wWidth;
   private int wHeight;
   private Group root = new Group();
-  private boolean inPlay = true;
+  private boolean inPlay = false;
+  private boolean won = false;
+
+  private Text lives = new Text();
+  private Text hit = new Text();
+  private Text destroyed = new Text();
+  private Text currPower = new Text();
+  private Text currDisAdv = new Text();
+  private Text winMsg = new Text();
+  private Text nextLvlMsg = new Text();
+  private Text loseMsg = new Text();
+  private Text lvlText = new Text();
+
+  private double[] hitsTextLoc;
+  private double[] livesTextLoc;
+  private double[] destroyedTextLoc;
+  private double[] powerupTextLoc;
+  private double[] disadvTextLoc;
+  private double[] lvlTextLoc;
 
   public Scene setupGame(int width, int height, Paint background) { //, int lvl) {
     //level = lvl;
-    level = 0;
+    level = 3;
+
+    lvlTextLoc = new double[] {5, TEXT_MARGIN_SIZE-5};
+    livesTextLoc = new double[] {width/5, TEXT_MARGIN_SIZE-5};
+    hitsTextLoc = new double[] {width/3+30, TEXT_MARGIN_SIZE-5};
+    destroyedTextLoc = new double[] {2*(width/3), TEXT_MARGIN_SIZE-5};
+    powerupTextLoc = new double[] {5, height-5};
+    disadvTextLoc = new double[] {width/2, height-5};
+
     wWidth = width-2;
-    wHeight = height;
-    inPlay = true;
+    wHeight = height-(TEXT_MARGIN_SIZE);
+
+    powerUpActive = null;
+    disAdvActive = null;
 
     Image ball_img = new Image(getClass().getResourceAsStream(BALL_IMAGE));
     Image[] paddle_imgs = {new Image(getClass().getResourceAsStream(PADDLE_IMAGE)),
@@ -139,6 +171,8 @@ public class Breakout {
       }
     }
 
+    drawText(root);
+
     Scene scene = new Scene(root, width, height, background);
     scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
     return scene;
@@ -148,17 +182,17 @@ public class Breakout {
     for (List<Block> blkRow : blocks) {
       for (Block blk : blkRow) {
         if (blk != null) {
-          blk.move(wWidth, wWidth, elapsedTime);
+          blk.move(wWidth, wWidth, TEXT_MARGIN_SIZE, elapsedTime);
         }
       }
     }
   }
 
-  public void step(double elapsedTime) {
+  public boolean step(double elapsedTime) {
     if (inPlay) {
       checkEffects(elapsedTime);
       List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
-      ball.move(wWidth, wHeight, elapsedTime, intersect.get(0), intersect.get(1));
+      ball.move(wWidth, wHeight, TEXT_MARGIN_SIZE, intersect.get(0), intersect.get(1), elapsedTime);
       moveBlocks(elapsedTime);
 
       if (ball.lostLife(wHeight)) {
@@ -168,7 +202,10 @@ public class Breakout {
         inPlay = false;
       }
       checkLost();
+      checkWon();
+      updateText(root);
     }
+    return gameIsRunning();
   }
 
   private void resetPaddleBall() {
@@ -246,8 +283,8 @@ public class Breakout {
 
   private void handleKeyInput(KeyCode code) {
     switch (code) {
-      case RIGHT -> paddle.setX(paddle.newPaddleX(true, wWidth, PADDLE_SPEED));
-      case LEFT -> paddle.setX(paddle.newPaddleX(false, wWidth, PADDLE_SPEED));
+      case RIGHT -> {if (inPlay) {paddle.setX(paddle.newPaddleX(true, wWidth, PADDLE_SPEED));}}
+      case LEFT -> {if (inPlay) {paddle.setX(paddle.newPaddleX(false, wWidth, PADDLE_SPEED));}}
       case UP, DOWN -> paddle.setX(paddle.getX());
       case S, L -> {livesLeft++; System.out.printf("lives left: %d\n", livesLeft);}
       case E -> paddle.enlargePaddle(wWidth);
@@ -295,7 +332,8 @@ public class Breakout {
     blockWidth = wWidth / numCols;
     blockHeight = wWidth / numRows;
 
-    int blockSpeed = BASE_BLOCK_SPEED+(level*BLOCK_SPEED_INC);
+    int blockSpeed = BASE_BLOCK_SPEED+((level-1)*BLOCK_SPEED_INC);
+    System.out.println(blockSpeed);
     int colIndex = 0;
     int rowIndex = 0;
     int c = inStream.read();
@@ -311,26 +349,26 @@ public class Breakout {
           blocks.add(new ArrayList<Block>());
         }
         case 32 -> colIndex++;
-        case 49 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, ice_imgs,
+        case 49 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
+            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, ice_imgs,
             1, blockSpeed, angle));
-        case 50 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, wood_imgs,
+        case 50 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
+            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, wood_imgs,
             2, blockSpeed, angle));
-        case 51 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, brick_imgs,
+        case 51 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
+            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, brick_imgs,
             3, blockSpeed, angle));
-        case 52 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, concrete_imgs,
+        case 52 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
+            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, concrete_imgs,
             4, blockSpeed, angle));
-        case 53 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, steel_imgs,
+        case 53 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
+            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, steel_imgs,
             5, blockSpeed, angle));
-        case 65 -> blocks.get(rowIndex).add(colIndex, new SnowAngelBlock(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, snow_angel_imgs,
+        case 65 -> blocks.get(rowIndex).add(colIndex, new SnowAngelBlock(colIndex*blockWidth+1,
+            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, snow_angel_imgs,
             3, blockSpeed, angle));
-        case 66 -> blocks.get(rowIndex).add(colIndex, new BlackIceBlock(colIndex*blockWidth,
-            rowIndex*blockHeight, blockWidth, blockHeight, black_imgs,
+        case 66 -> blocks.get(rowIndex).add(colIndex, new BlackIceBlock(colIndex*blockWidth+1,
+            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, black_imgs,
             3, blockSpeed, angle));
         default -> blocks.get(rowIndex).add(colIndex, null);
       }
@@ -361,7 +399,7 @@ public class Breakout {
       if (POWERUPS.contains(effect) && powerUpActive == null) {
         doPowerUp(effect, b);
       }
-      else if (disAdvActive == null) {
+      else if (DISADVGS.contains(effect) && disAdvActive == null) {
         doDisAdv(effect);
       }
     }
@@ -439,8 +477,114 @@ public class Breakout {
     paddle.makeSlippery(active);
   }
 
+  private void checkWon() {
+    for (List<Block> blkRow : blocks) {
+      for (Block blk : blkRow) {
+        if (blk != null) {
+          won = false;
+          return;
+        }
+      }
+    }
+    inPlay = false;
+    won = true;
+  }
+
   public boolean gameIsRunning() {
-    return livesLeft > 0;
+    return (livesLeft > 0 || !won);
+  }
+
+  public boolean gameIsWon() {
+    return won;
+  }
+
+  private void drawText(Group root) {
+    Font f = new Font(18);
+    lvlText.setText("Level: " + level);
+    lvlText.setX(lvlTextLoc[0]);
+    lvlText.setY(lvlTextLoc[1]);
+    lvlText.setFont(f);
+    lvlText.setFill(Color.LIGHTBLUE);
+
+    lives.setText("Lives: " + livesLeft);
+    lives.setX(livesTextLoc[0]);
+    lives.setY(livesTextLoc[1]);
+    lives.setFont(f);
+    lives.setFill(Color.LIGHTBLUE);
+
+    hit.setText("Blocks Hit: " + blocksHit);
+    hit.setX(hitsTextLoc[0]);
+    hit.setY(hitsTextLoc[1]);
+    hit.setFont(f);
+    hit.setFill(Color.LIGHTBLUE);
+
+    destroyed.setText("Blocks Destroyed: " + blocksBroken);
+    destroyed.setX(destroyedTextLoc[0]);
+    destroyed.setY(destroyedTextLoc[1]);
+    destroyed.setFont(f);
+    destroyed.setFill(Color.LIGHTBLUE);
+
+    currPower.setText("Power Up: --");
+    currPower.setX(powerupTextLoc[0]);
+    currPower.setY(powerupTextLoc[1]);
+    currPower.setFont(f);
+    currPower.setFill(Color.LIGHTBLUE);
+
+    currDisAdv.setText("Disadvantage: --");
+    currDisAdv.setX(disadvTextLoc[0]);
+    currDisAdv.setY(disadvTextLoc[1]);
+    currDisAdv.setFont(f);
+    currDisAdv.setFill(Color.LIGHTBLUE);
+
+    winMsg.setText("YOU WIN!");
+    winMsg.setFont(new Font(50));
+    winMsg.setFill(Color.LIGHTBLUE);
+    winMsg.setX(wWidth/2 - winMsg.getBoundsInParent().getWidth()/2);
+    winMsg.setY(2*(wHeight/5));
+
+    nextLvlMsg.setText("Press enter to continue to the next level");
+    nextLvlMsg.setFont(f);
+    nextLvlMsg.setFill(Color.LIGHTBLUE);
+    nextLvlMsg.setX(wWidth/2 - nextLvlMsg.getBoundsInParent().getWidth()/2);
+    nextLvlMsg.setY(2*(wHeight/5) + 2*winMsg.getBoundsInParent().getHeight());
+
+    loseMsg.setText("YOU LOSE");
+    loseMsg.setFont(new Font(50));
+    loseMsg.setFill(Color.LIGHTBLUE);
+    loseMsg.setX(wWidth/2 - loseMsg.getBoundsInParent().getWidth()/2);
+    loseMsg.setY(2*(wHeight/5));
+
+    root.getChildren().add(lives);
+    root.getChildren().add(hit);
+    root.getChildren().add(destroyed);
+    root.getChildren().add(currPower);
+    root.getChildren().add(currDisAdv);
+    root.getChildren().add(lvlText);
+  }
+
+  private void updateText(Group root) {
+    lives.setText("Lives: " + livesLeft);
+    hit.setText("Blocks Hit: " + blocksHit);
+    destroyed.setText("Blocks Destroyed: " + blocksBroken);
+
+    if (powerUpActive == null) {
+      currPower.setText("Power Up: --");
+    }
+    else {currPower.setText("Power Up: " + powerUpActive);}
+
+    if (disAdvActive == null) {
+      currDisAdv.setText("Disadvantage: --");
+    }
+    else {currDisAdv.setText("Disadvantage: " + disAdvActive);}
+
+    if (won) {
+      root.getChildren().add(winMsg);
+      if (level < 3) {root.getChildren().add(nextLvlMsg);}
+    }
+
+    if (livesLeft <= 0) {
+      root.getChildren().add(loseMsg);
+    }
   }
 
 }

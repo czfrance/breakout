@@ -26,7 +26,7 @@ public class Main extends Application {
   // useful names for constant values used
   public static final String TITLE = "Breakout: Winter Wonderland";
   public static final int WIDTH = 600;
-  public static final int HEIGHT = WIDTH + 100;
+  public static final int HEIGHT = WIDTH + 150;
   public static final Color VERYDARKGRAY = Color.rgb(51, 51, 51);
   public static final Paint BACKGROUND = VERYDARKGRAY;
   public static final int FRAMES_PER_SECOND = 60;
@@ -34,13 +34,46 @@ public class Main extends Application {
 
   // instance variables
   private Breakout myGame;
+  private SplashScreen mySplash;
+  private ResultsScreen myResults;
 
+  private int currLvl = 1;
+  private boolean win = false;
 
   /**
    * Initialize what will be displayed.
    */
   @Override
   public void start(Stage stage) {
+    displayResults(stage);
+//    displaySplash(stage);
+//    startBreakoutLevel(stage);
+  }
+
+  private void displaySplash(Stage stage) {
+    mySplash = new SplashScreen();
+
+    Scene scene = mySplash.drawScene(WIDTH, HEIGHT, BACKGROUND, currLvl);
+    stage.setScene(scene);
+    stage.setTitle(TITLE);
+    stage.show();
+
+    while (!mySplash.begin()) {
+      continue;
+    }
+    return;
+  }
+
+  private void displayResults(Stage stage) {
+    myResults = new ResultsScreen();
+
+    Scene scene = myResults.drawScene(WIDTH, HEIGHT, BACKGROUND, win);
+    stage.setScene(scene);
+    stage.setTitle(TITLE);
+    stage.show();
+  }
+
+  private void startBreakoutLevel(Stage stage) {
     myGame = new Breakout();
 
     // attach scene to the stage and display it
@@ -48,11 +81,51 @@ public class Main extends Application {
     stage.setScene(scene);
     stage.setTitle(TITLE);
     stage.show();
-    // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
+    // attach "game loop" to timeline to play it (basically just calling step() method repeatedly
+    // forever)
     Timeline animation = new Timeline();
+    animation.setCycleCount(Timeline.INDEFINITE);
+    animation.getKeyFrames()
+        .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
+    animation.play();
+    //playAnimation(animation);
+//    while (myGame.gameIsRunning()) {
+//      System.out.println("running");
+//      continue;
+//    }
+//    animation.stop();
+  }
+
+  private void playAnimation(Timeline animation) {
     animation.setCycleCount(Timeline.INDEFINITE);
     animation.getKeyFrames()
         .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
     animation.play();
   }
 }
+
+//    myGame = new Breakout();
+//
+//    // attach scene to the stage and display it
+//    Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND);
+//    stage.setScene(scene);
+//    stage.setTitle(TITLE);
+//    stage.show();
+//    // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
+//    Timeline animation = new Timeline();
+//    animation.setCycleCount(Timeline.INDEFINITE);
+//    animation.getKeyFrames()
+//        .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
+//    animation.play();
+//    animation.stop();
+
+
+/*
+if (myGame.gameIsRunning()) {
+      animation.setCycleCount(Timeline.INDEFINITE);
+      animation.getKeyFrames()
+          .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
+      animation.play();
+    }
+    animation.stop();
+ */

@@ -32,8 +32,8 @@ public class Ball extends ImageView {
     this.setFitHeight(sz);
   }
 
-  public void move(int w, int h, double elapsedTime, boolean intersectHoriz,
-      boolean intersectVert) {
+  public void move(int w, int h, int margin, boolean intersectHoriz,
+      boolean intersectVert, double elapsedTime) {
     if (onVertBorder(w) || intersectVert) {
       if (angle <= 180) {
         angle = 180 - angle;
@@ -42,7 +42,7 @@ public class Ball extends ImageView {
       }
     }
 
-    if (onHorizBorder(h) || intersectHoriz) {
+    if (onHorizBorder(h, margin) || intersectHoriz) {
       angle = 360 - angle;
     }
 
@@ -54,8 +54,8 @@ public class Ball extends ImageView {
     return this.getX() >= (w - this.getFitWidth()) || this.getX() <= 0;
   }
 
-  private boolean onHorizBorder(int h) {
-    return this.getY() >= (h - this.getFitHeight()) || this.getY() <= 0;
+  private boolean onHorizBorder(int h, int margin) {
+    return this.getY() >= (h - this.getFitHeight()) || this.getY() <= margin;
   }
 
   public void deviatePath(double percentDev) {

@@ -24,7 +24,7 @@ public class Block extends Rectangle {
     this.setFill(new ImagePattern(images[0]));
   }
 
-  public void move(int w, int h, double elapsedTime) {
+  public void move(int w, int h, int margin, double elapsedTime) {
     if (onVertBorder(w)) {
       if (angle <= 180) {
         angle = 180 - angle;
@@ -33,7 +33,7 @@ public class Block extends Rectangle {
       }
     }
 
-    if (onHorizBorder(h)) {
+    if (onHorizBorder(h, margin)) {
       angle = 360 - angle;
     }
 
@@ -47,8 +47,8 @@ public class Block extends Rectangle {
     return this.getX() >= (w - this.getWidth()) || this.getX() <= 0;
   }
 
-  private boolean onHorizBorder(int h) {
-    return this.getY() >= (h - this.getHeight()) || this.getY() <= 0;
+  private boolean onHorizBorder(int h, int margin) {
+    return this.getY() >= (h - this.getHeight()) || this.getY() <= margin;
   }
 
   public void hit() {
