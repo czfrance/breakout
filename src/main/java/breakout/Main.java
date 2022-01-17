@@ -3,6 +3,7 @@ package breakout;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.shape.Circle;
@@ -31,8 +32,8 @@ public class Main extends Application {
   public static final Paint BACKGROUND = VERYDARKGRAY;
   public static final int FRAMES_PER_SECOND = 60;
   public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
+  public static final int NUM_LVLS = 3;
 
-  // instance variables
   private Breakout myGame;
   private SplashScreen mySplash;
   private ResultsScreen myResults;
@@ -45,9 +46,7 @@ public class Main extends Application {
    */
   @Override
   public void start(Stage stage) {
-    displayResults(stage);
-//    displaySplash(stage);
-//    startBreakoutLevel(stage);
+    displaySplash(stage);
   }
 
   private void displaySplash(Stage stage) {
@@ -57,11 +56,13 @@ public class Main extends Application {
     stage.setScene(scene);
     stage.setTitle(TITLE);
     stage.show();
+    scene.setOnKeyReleased(e -> handleSplashKeyInput(e.getCode(), stage));
+  }
 
-    while (!mySplash.begin()) {
-      continue;
+  private void handleSplashKeyInput(KeyCode code, Stage stage) {
+    switch (code) {
+      case ENTER -> startBreakoutLevel(stage);
     }
-    return;
   }
 
   private void displayResults(Stage stage) {
@@ -77,7 +78,7 @@ public class Main extends Application {
     myGame = new Breakout();
 
     // attach scene to the stage and display it
-    Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND);
+    Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND, currLvl);
     stage.setScene(scene);
     stage.setTitle(TITLE);
     stage.show();
@@ -88,12 +89,37 @@ public class Main extends Application {
     animation.getKeyFrames()
         .add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> myGame.step(SECOND_DELAY)));
     animation.play();
-    //playAnimation(animation);
-//    while (myGame.gameIsRunning()) {
-//      System.out.println("running");
-//      continue;
-//    }
-//    animation.stop();
+
+    scene.setOnKeyReleased(e -> handleBreakoutKeyInput(e.getCode(), stage));
+  }
+
+  private void handleBreakoutKeyInput(KeyCode code, Stage stage) {
+    System.out.println("handling breakout key in main");
+    System.out.println(myGame.gameIsRunning() + " " + myGame.gameIsWon());
+    switch(code) {
+      case ENTER -> {
+        if (!myGame.gameIsRunning() && !myGame.gameIsWon()) {
+          win = false;
+          displayResults(stage);
+        }
+        else if (!myGame.gameIsRunning() && myGame.gameIsWon() && currLvl < NUM_LVLS) {
+          currLvl++;
+          displaySplash(stage);
+        }
+        else if (!myGame.gameIsRunning() && myGame.gameIsWon() && currLvl == NUM_LVLS) {
+          win = true;
+          displayResults(stage);
+        }
+      }
+      case DIGIT1 -> jumpToLvl(1, stage);
+      case DIGIT2 -> jumpToLvl(2, stage);
+      case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 -> jumpToLvl(3, stage);
+    }
+  }
+
+  private void jumpToLvl(int lvl, Stage stage) {
+    currLvl = lvl;
+    displaySplash(stage);
   }
 
   private void playAnimation(Timeline animation) {

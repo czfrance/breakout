@@ -37,7 +37,7 @@ import javafx.scene.text.Text;
       . 12 all power ups + deep freeze
       .  12.5 check all powerups, disadvantages
       . 13 planned cheat keys
-       14 different game screens
+      . 14 different game screens
       . 15 add additional cheat keys
        16 properly format & document everything
 
@@ -45,7 +45,7 @@ import javafx.scene.text.Text;
        * debugging
       . * pre-reqs (preparing all materials & images)
       . * general game operations (when game end, creating pictures, counters)
-       * game screens
+      . * game screens
       . * blocks
       . * paddles
       . * power ups
@@ -73,7 +73,9 @@ public class Breakout {
   public static final String ICE_ICED_IMAGE = RESOURCE_PATH + "ice-iced.png";
   public static final String SNOW_ANGEL_ICED_IMAGE = RESOURCE_PATH + "gold-iced.png";
   public static final String BLACK_ICED_IMAGE = RESOURCE_PATH + "carbon-fiber-iced.png";
-  public static final String MAP_FILE = "src/main/resources/january.txt";
+  public static final String NOV_MAP_FILE = "src/main/resources/november.txt";
+  public static final String DEC_MAP_FILE = "src/main/resources/december.txt";
+  public static final String JAN_MAP_FILE = "src/main/resources/january.txt";
   public static final int BALL_SPEED = 100;
   public static final int BALL_SIZE = 10;
   public static final int INIT_BALL_ANGLE = 75; //default to 75
@@ -130,9 +132,8 @@ public class Breakout {
   private double[] disadvTextLoc;
   private double[] lvlTextLoc;
 
-  public Scene setupGame(int width, int height, Paint background) { //, int lvl) {
-    //level = lvl;
-    level = 3;
+  public Scene setupGame(int width, int height, Paint background, int lvl) {
+    level = lvl;
 
     lvlTextLoc = new double[] {5, TEXT_MARGIN_SIZE-5};
     livesTextLoc = new double[] {width/5, TEXT_MARGIN_SIZE-5};
@@ -155,8 +156,10 @@ public class Breakout {
         wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1));
     paddle = new Paddle(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT,
         PADDLE_WIDTH, PADDLE_HEIGHT, paddle_imgs);
+
+    String map = getMap(level);
     try {
-      blocks = buildMap(MAP_FILE);
+      blocks = buildMap(map);
     } catch (IOException e) {
       System.out.println("IOException, unable to build map");
     }
@@ -176,6 +179,14 @@ public class Breakout {
     Scene scene = new Scene(root, width, height, background);
     scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
     return scene;
+  }
+
+  private String getMap(int lvl) {
+    switch (lvl) {
+      case 1 -> {return NOV_MAP_FILE;}
+      case 2 -> {return DEC_MAP_FILE;}
+      default -> {return JAN_MAP_FILE;}
+    }
   }
 
   public void moveBlocks(double elapsedTime) {
@@ -201,7 +212,7 @@ public class Breakout {
         resetPaddleBall();
         inPlay = false;
       }
-      checkLost();
+      //checkLost();
       checkWon();
       updateText(root);
     }
@@ -289,12 +300,12 @@ public class Breakout {
       case S, L -> {livesLeft++; System.out.printf("lives left: %d\n", livesLeft);}
       case E -> paddle.enlargePaddle(wWidth);
       case D -> doPowerUp("deep freeze", null);
-      case F -> System.out.println("level pass!");
+      case F -> {
+        inPlay = false;
+        won = true;
+        updateText(root);
+      }
       case R -> resetPaddleBall();
-      case DIGIT1 -> System.out.println("level: NOVEMBER");
-      case DIGIT2 -> System.out.println("level: DECEMBER");
-      case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 ->
-          System.out.println("level: JANUARY");
       case SPACE -> inPlay = true;
     }
   }
@@ -333,7 +344,6 @@ public class Breakout {
     blockHeight = wWidth / numRows;
 
     int blockSpeed = BASE_BLOCK_SPEED+((level-1)*BLOCK_SPEED_INC);
-    System.out.println(blockSpeed);
     int colIndex = 0;
     int rowIndex = 0;
     int c = inStream.read();
@@ -377,12 +387,12 @@ public class Breakout {
     return blocks;
   }
 
-  private void checkLost() {
-    if (livesLeft == 0) {
-      System.out.println("LOST");
-      System.exit(0);
-    }
-  }
+//  private void checkLost() {
+//    if (livesLeft == 0) {
+//      System.out.println("LOST");
+//      System.exit(0);
+//    }
+//  }
 
   private void destroyBlock(int i, int j) {
     Block b = blocks.get(i).get(j);
@@ -491,7 +501,13 @@ public class Breakout {
   }
 
   public boolean gameIsRunning() {
-    return (livesLeft > 0 || !won);
+    if (won) {
+      return false;
+    }
+    if (livesLeft <= 0) {
+      return false;
+    }
+    return true;
   }
 
   public boolean gameIsWon() {
@@ -538,19 +554,19 @@ public class Breakout {
 
     winMsg.setText("YOU WIN!");
     winMsg.setFont(new Font(50));
-    winMsg.setFill(Color.LIGHTBLUE);
+    winMsg.setFill(Color.MEDIUMSPRINGGREEN);
     winMsg.setX(wWidth/2 - winMsg.getBoundsInParent().getWidth()/2);
     winMsg.setY(2*(wHeight/5));
 
-    nextLvlMsg.setText("Press enter to continue to the next level");
+    nextLvlMsg.setText("Press enter to continue");
     nextLvlMsg.setFont(f);
-    nextLvlMsg.setFill(Color.LIGHTBLUE);
+    nextLvlMsg.setFill(Color.MEDIUMSPRINGGREEN);
     nextLvlMsg.setX(wWidth/2 - nextLvlMsg.getBoundsInParent().getWidth()/2);
     nextLvlMsg.setY(2*(wHeight/5) + 2*winMsg.getBoundsInParent().getHeight());
 
     loseMsg.setText("YOU LOSE");
     loseMsg.setFont(new Font(50));
-    loseMsg.setFill(Color.LIGHTBLUE);
+    loseMsg.setFill(Color.MEDIUMSPRINGGREEN);
     loseMsg.setX(wWidth/2 - loseMsg.getBoundsInParent().getWidth()/2);
     loseMsg.setY(2*(wHeight/5));
 
@@ -579,12 +595,12 @@ public class Breakout {
 
     if (won) {
       root.getChildren().add(winMsg);
-      if (level < 3) {root.getChildren().add(nextLvlMsg);}
+      root.getChildren().add(nextLvlMsg);
     }
 
     if (livesLeft <= 0) {
       root.getChildren().add(loseMsg);
+      root.getChildren().add(nextLvlMsg);
     }
   }
-
 }

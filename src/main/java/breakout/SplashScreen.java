@@ -1,5 +1,7 @@
 package breakout;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -16,9 +18,6 @@ public class SplashScreen {
   private Text rules = new Text();
   private Text lvlText = new Text();
   private Text instructions = new Text();
-
-  private boolean begin = false;
-
 
   public Scene drawScene(int width, int height, Paint background, int lvl) {
     title.setText("BREAKOUT: WINTER WONDERLAND");
@@ -58,17 +57,6 @@ public class SplashScreen {
     root.getChildren().add(instructions);
 
     Scene scene = new Scene(root, width, height, background);
-    scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
     return scene;
-  }
-
-  public boolean begin() {
-    return begin;
-  }
-
-  private void handleKeyInput(KeyCode code) {
-    switch (code) {
-      case ENTER -> begin = true;
-    }
   }
 }
