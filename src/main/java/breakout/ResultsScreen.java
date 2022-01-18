@@ -21,8 +21,8 @@ import javafx.scene.text.Text;
  */
 public class ResultsScreen extends Screen {
 
-  private static final int statusTextSize = 30;
-  private static final int resultTextSize = 50;
+  public static final int STATUS_TEXT_SIZE = 30;
+  public static final int RESULT_TEXT_SIZE = 50;
 
   private Text gameOver = new Text();
   private Text winText = new Text();
@@ -41,15 +41,15 @@ public class ResultsScreen extends Screen {
    * @see Scene
    */
   public Scene drawScene(int width, int height, Paint background, boolean won) {
-    setBasicTextOptions(gameOver, "GAME OVER", statusTextSize, Color.LIGHTBLUE);
+    setBasicTextOptions(gameOver, "GAME OVER", STATUS_TEXT_SIZE, Color.LIGHTBLUE);
     gameOver.setX(width / 2 - gameOver.getBoundsInParent().getWidth() / 2);
     gameOver.setY(2 * (height / 5));
 
-    setBasicTextOptions(winText, "YOU WIN!", resultTextSize, Color.LIGHTBLUE);
+    setBasicTextOptions(winText, "YOU WIN!", RESULT_TEXT_SIZE, Color.LIGHTBLUE);
     winText.setX(width / 2 - winText.getBoundsInParent().getWidth() / 2);
     winText.setY(2 * (height / 5) + 2 * gameOver.getBoundsInParent().getHeight());
 
-    setBasicTextOptions(loseText, "YOU LOSE", resultTextSize, Color.LIGHTBLUE);
+    setBasicTextOptions(loseText, "YOU LOSE", RESULT_TEXT_SIZE, Color.LIGHTBLUE);
     loseText.setX(width / 2 - loseText.getBoundsInParent().getWidth() / 2);
     loseText.setY(2 * (height / 5) + 2 * gameOver.getBoundsInParent().getHeight());
 
@@ -60,8 +60,6 @@ public class ResultsScreen extends Screen {
       root.getChildren().add(loseText);
     }
 
-    Scene scene = new Scene(root, width, height, background);
-    return scene;
+    return new Scene(root, width, height, background);
   }
-
 }

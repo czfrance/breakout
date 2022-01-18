@@ -33,7 +33,7 @@ public class Block extends Rectangle {
   private final int speed;
   private int currSpeed;
   private double angle;
-  double speedFraction = 0.001;
+  private double speedFraction = 0.001;
 
   /**
    * Creates an instance of Block

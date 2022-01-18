@@ -30,6 +30,7 @@ public class Ball extends ImageView {
   public static final int MIN_BALL_ANGLE = 10;
   public static final int SPEED_INCREMENT = 30;
   public static final int AVALANCHE_MULTIPLE = 2;
+
   private int speed;
   private double angle;
   private final int size;
@@ -130,6 +131,69 @@ public class Ball extends ImageView {
     return ret;
   }
 
+  /**
+   * Calculates the new angle with which the ball with travel
+   *
+   * @param percentDev The maximum percent of 180 degrees the new angle can deviate from its current
+   *                   angle.
+   */
+  public void deviatePath(double percentDev) {
+    Random rand = new Random();
+    double maxDeviation = percentDev * 180;
+    double minAngle = angle - maxDeviation;
+    double angleDev = rand.nextDouble(maxDeviation * 2 + 1);
+    angle = calcNewDeviationAngle(angleDev, minAngle);
+  }
+
+  /**
+   * Calculates the new ball angle, angle +- SLIP_ANGLE, from the current ball angle
+   */
+  public void slip() {
+    //angle of ball coming into paddle is always between 180 and 360
+    double newAngle;
+    if (angle < 270) {
+      newAngle = angle - SLIP_ANGLE;
+      angle = (newAngle > 180 + MIN_BALL_ANGLE) ? newAngle : 180 + MIN_BALL_ANGLE + 1;
+    } else if (angle < 270) {
+      newAngle = angle + SLIP_ANGLE;
+      angle = (newAngle < 360 - MIN_BALL_ANGLE) ? newAngle : 360 - MIN_BALL_ANGLE - 1;
+    }
+  }
+
+  /**
+   * Calculates if the ball has hit the bottom of the playable area (and thus lost a life)
+   *
+   * @param windowHeight the height of the playable area
+   * @return true if ball has hit the bottom, false otherwise
+   */
+  public boolean lostLife(int windowHeight) {
+    return this.getY() >= (windowHeight - this.getFitHeight());
+  }
+
+  /**
+   * Increases the size of the ball to avalancheSize, which is AVALANCHE_MULTIPLE times the normal
+   * size of the ball.
+   */
+  public void makeAvalanche() {
+    this.setFitWidth(avalancheSize);
+    this.setFitHeight(avalancheSize);
+  }
+
+  /**
+   * Resets the size of the ball to its normal size following expiration of avalanche power up
+   */
+  public void unAvalanche() {
+    this.setFitWidth(size);
+    this.setFitHeight(size);
+  }
+
+  /**
+   * Increases the speed at which the ball travels by SPEED_INCREMENT
+   */
+  public void incSpeed() {
+    speed += SPEED_INCREMENT;
+  }
+
   private boolean intersectsOnHoriz(Bounds ball, Bounds otherObj) {
     double ballCenterX = ball.getCenterX();
     double ballCenterY = ball.getCenterY();
@@ -178,35 +242,6 @@ public class Ball extends ImageView {
     return this.getY() >= (h - this.getFitHeight()) || this.getY() <= margin;
   }
 
-  /**
-   * Calculates the new angle with which the ball with travel
-   *
-   * @param percentDev The maximum percent of 180 degrees the new angle can deviate from its current
-   *                   angle.
-   */
-  public void deviatePath(double percentDev) {
-    Random rand = new Random();
-    double maxDeviation = percentDev * 180;
-    double minAngle = angle - maxDeviation;
-    double angleDev = rand.nextDouble(maxDeviation * 2 + 1);
-    angle = calcNewDeviationAngle(angleDev, minAngle);
-  }
-
-  /**
-   * Calculates the new ball angle, angle +- SLIP_ANGLE, from the current ball angle
-   */
-  public void slip() {
-    //angle of ball coming into paddle is always between 180 and 360
-    double newAngle;
-    if (angle < 270) {
-      newAngle = angle - SLIP_ANGLE;
-      angle = (newAngle > 180 + MIN_BALL_ANGLE) ? newAngle : 180 + MIN_BALL_ANGLE + 1;
-    } else if (angle < 270) {
-      newAngle = angle + SLIP_ANGLE;
-      angle = (newAngle < 360 - MIN_BALL_ANGLE) ? newAngle : 360 - MIN_BALL_ANGLE - 1;
-    }
-  }
-
   private double calcNewDeviationAngle(double value, double minAngle) {
     //angle of ball coming into paddle is always between 180 and 360
     double newAngle = minAngle + value;
@@ -217,39 +252,5 @@ public class Ball extends ImageView {
       return 360 - MIN_BALL_ANGLE - 1;
     }
     return newAngle;
-  }
-
-  /**
-   * Calculates if the ball has hit the bottom of the playable area (and thus lost a life)
-   *
-   * @param windowHeight the height of the playable area
-   * @return true if ball has hit the bottom, false otherwise
-   */
-  public boolean lostLife(int windowHeight) {
-    return this.getY() >= (windowHeight - this.getFitHeight());
-  }
-
-  /**
-   * Increases the size of the ball to avalancheSize, which is AVALANCHE_MULTIPLE times the normal
-   * size of the ball.
-   */
-  public void makeAvalanche() {
-    this.setFitWidth(avalancheSize);
-    this.setFitHeight(avalancheSize);
-  }
-
-  /**
-   * Resets the size of the ball to its normal size following expiration of avalanche power up
-   */
-  public void unAvalanche() {
-    this.setFitWidth(size);
-    this.setFitHeight(size);
-  }
-
-  /**
-   * Increases the speed at which the ball travels by SPEED_INCREMENT
-   */
-  public void incSpeed() {
-    speed += SPEED_INCREMENT;
   }
 }

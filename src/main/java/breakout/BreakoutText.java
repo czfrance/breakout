@@ -35,14 +35,12 @@ public class BreakoutText {
   private final Text nextLvlMsg = new Text();
   private final Text loseMsg = new Text();
   private final Text lvlText = new Text();
-
   private double[] hitsTextLoc;
   private double[] livesTextLoc;
   private double[] destroyedTextLoc;
   private double[] powerupTextLoc;
   private double[] disadvTextLoc;
   private double[] lvlTextLoc;
-
   private int windowWidth;
   private int windowHeight;
 
@@ -59,21 +57,6 @@ public class BreakoutText {
     windowHeight = height;
 
     setUpText();
-  }
-
-  private void setUpText() {
-    addGameTextLocations();
-  }
-
-  private void addGameTextLocations() {
-    int marginSpacer = 5;
-
-    lvlTextLoc = new double[]{marginSpacer, TEXT_MARGIN_SIZE - marginSpacer};
-    livesTextLoc = new double[]{windowWidth / 5, TEXT_MARGIN_SIZE - marginSpacer};
-    hitsTextLoc = new double[]{windowWidth / 3 + 30, TEXT_MARGIN_SIZE - marginSpacer};
-    destroyedTextLoc = new double[]{2 * (windowWidth / 3), TEXT_MARGIN_SIZE - marginSpacer};
-    powerupTextLoc = new double[]{marginSpacer, windowHeight - marginSpacer};
-    disadvTextLoc = new double[]{windowWidth / 2, windowHeight - marginSpacer};
   }
 
   /**
@@ -175,6 +158,21 @@ public class BreakoutText {
       root.getChildren().add(loseMsg);
       root.getChildren().add(nextLvlMsg);
     }
+  }
+
+  private void setUpText() {
+    addGameTextLocations();
+  }
+
+  private void addGameTextLocations() {
+    int marginSpacer = 5;
+
+    lvlTextLoc = new double[]{marginSpacer, TEXT_MARGIN_SIZE - marginSpacer};
+    livesTextLoc = new double[]{windowWidth / 5, TEXT_MARGIN_SIZE - marginSpacer};
+    hitsTextLoc = new double[]{windowWidth / 3 + 30, TEXT_MARGIN_SIZE - marginSpacer};
+    destroyedTextLoc = new double[]{2 * (windowWidth / 3), TEXT_MARGIN_SIZE - marginSpacer};
+    powerupTextLoc = new double[]{marginSpacer, windowHeight - marginSpacer};
+    disadvTextLoc = new double[]{windowWidth / 2, windowHeight - marginSpacer};
   }
 
   private void setBasicTextOptions(Text textName, String text, int fontSize, Color color) {

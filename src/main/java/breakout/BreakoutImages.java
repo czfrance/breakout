@@ -42,9 +42,9 @@ public class BreakoutImages {
   public static final String SNOW_ANGEL_ICED_IMAGE = RESOURCE_PATH + "gold-iced.png";
   public static final String BLACK_ICE_ICED_IMAGE = RESOURCE_PATH + "carbon-fiber-iced.png";
 
-  Image ballImg;
-  Image[] paddleImgs;
-  List<Image[]> blockImgs;
+  private Image ballImg;
+  private Image[] paddleImgs;
+  private List<Image[]> blockImgs;
 
   /**
    * Creates an instance of BreakoutImages
@@ -54,34 +54,6 @@ public class BreakoutImages {
    */
   public BreakoutImages() {
     createImages();
-  }
-
-  private void createImages() {
-    ballImg = new Image(getClass().getResourceAsStream(BALL_IMAGE));
-    paddleImgs = new Image[]{new Image(getClass().getResourceAsStream(PADDLE_IMAGE)),
-        new Image(getClass().getResourceAsStream(PADDLE_SLIP_IMAGE))};
-    blockImgs = createBlockImages();
-
-  }
-
-  private List<Image[]> createBlockImages() {
-    List<Image[]> blockImages = new ArrayList<>(Collections.nCopies(70, null));
-    blockImages.add(49, new Image[]{new Image(getClass().getResourceAsStream(ICE_IMAGE)),
-        new Image(getClass().getResourceAsStream(ICE_ICED_IMAGE))});
-    blockImages.add(50, new Image[]{new Image(getClass().getResourceAsStream(WOOD_IMAGE)),
-        new Image(getClass().getResourceAsStream(WOOD_ICED_IMAGE))});
-    blockImages.add(51, new Image[]{new Image(getClass().getResourceAsStream(BRICK_IMAGE)),
-        new Image(getClass().getResourceAsStream(BRICK_ICED_IMAGE))});
-    blockImages.add(52, new Image[]{new Image(getClass().getResourceAsStream(CONCRETE_IMAGE)),
-        new Image(getClass().getResourceAsStream(CONCRETE_ICED_IMAGE))});
-    blockImages.add(53, new Image[]{new Image(getClass().getResourceAsStream(STEEL_IMAGE)),
-        new Image(getClass().getResourceAsStream(STEEL_ICED_IMAGE))});
-    blockImages.add(65, new Image[]{new Image(getClass().getResourceAsStream(SNOW_ANGEL_IMAGE)),
-        new Image(getClass().getResourceAsStream(SNOW_ANGEL_ICED_IMAGE))});
-    blockImages.add(66, new Image[]{new Image(getClass().getResourceAsStream(BLACK_ICE_IMAGE)),
-        new Image(getClass().getResourceAsStream(BLACK_ICE_ICED_IMAGE))});
-
-    return blockImages;
   }
 
   /**
@@ -114,5 +86,33 @@ public class BreakoutImages {
    */
   public List<Image[]> getBlockImgs() {
     return blockImgs;
+  }
+
+  private void createImages() {
+    ballImg = new Image(getClass().getResourceAsStream(BALL_IMAGE));
+    paddleImgs = new Image[]{new Image(getClass().getResourceAsStream(PADDLE_IMAGE)),
+        new Image(getClass().getResourceAsStream(PADDLE_SLIP_IMAGE))};
+    blockImgs = createBlockImages();
+
+  }
+
+  private List<Image[]> createBlockImages() {
+    List<Image[]> blockImages = new ArrayList<>(Collections.nCopies(70, null));
+    blockImages.add(49, new Image[]{new Image(getClass().getResourceAsStream(ICE_IMAGE)),
+        new Image(getClass().getResourceAsStream(ICE_ICED_IMAGE))});
+    blockImages.add(50, new Image[]{new Image(getClass().getResourceAsStream(WOOD_IMAGE)),
+        new Image(getClass().getResourceAsStream(WOOD_ICED_IMAGE))});
+    blockImages.add(51, new Image[]{new Image(getClass().getResourceAsStream(BRICK_IMAGE)),
+        new Image(getClass().getResourceAsStream(BRICK_ICED_IMAGE))});
+    blockImages.add(52, new Image[]{new Image(getClass().getResourceAsStream(CONCRETE_IMAGE)),
+        new Image(getClass().getResourceAsStream(CONCRETE_ICED_IMAGE))});
+    blockImages.add(53, new Image[]{new Image(getClass().getResourceAsStream(STEEL_IMAGE)),
+        new Image(getClass().getResourceAsStream(STEEL_ICED_IMAGE))});
+    blockImages.add(65, new Image[]{new Image(getClass().getResourceAsStream(SNOW_ANGEL_IMAGE)),
+        new Image(getClass().getResourceAsStream(SNOW_ANGEL_ICED_IMAGE))});
+    blockImages.add(66, new Image[]{new Image(getClass().getResourceAsStream(BLACK_ICE_IMAGE)),
+        new Image(getClass().getResourceAsStream(BLACK_ICE_ICED_IMAGE))});
+
+    return blockImages;
   }
 }

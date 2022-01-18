@@ -52,10 +52,16 @@ public class Breakout {
   public static final int NUM_LIVES = 5;
   public static final int POWERUP_TIME_LIMIT = 15;
   public static final int DISADV_TIME_LIMIT = 15;
-  public static final List<String> POWERUPS =
-      Arrays.asList("winter freeze", "avalanche", "spread the holiday cheer");
+  public static final List<String> POWERUPS = Arrays.asList("winter freeze", "avalanche",
+      "spread the holiday cheer");
   public static final List<String> DISADVGS = Arrays.asList("slippery paddle");
 
+  private final Group root = new Group();
+  private BreakoutText myText;
+  private BreakoutImages myImages;
+  private Ball ball;
+  private Paddle paddle;
+  private List<List<Block>> blocks;
   private int level;
   private int livesLeft = NUM_LIVES;
   private int blocksBroken = 0;
@@ -64,18 +70,11 @@ public class Breakout {
   private double powerUpActiveTime = 0;
   private String disAdvActive;
   private double disAdvActiveTime = 0;
-
-  private Ball ball;
-  private Paddle paddle;
-  private List<List<Block>> blocks;
-  private BreakoutText myText;
-  private BreakoutImages myImages;
   private int playableWindowWidth;
   private int playableWindowHeight;
   private boolean inPlay = false;
   private boolean won = false;
 
-  private final Group root = new Group();
 
   /**
    * Sets up the first screen of Breakout. Loads ball, paddle, all blocks, and text
@@ -124,6 +123,56 @@ public class Breakout {
     return scene;
   }
 
+  /**
+   * Updates the positions and states of all elements of the game to create the next frame of the
+   * game animation
+   *
+   * @param elapsedTime the amount of time passed between the previous frame and the current frame
+   *                    being made
+   */
+  public void step(double elapsedTime) {
+    if (inPlay) {
+      checkEffects(elapsedTime);
+      List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
+      ball.move(playableWindowWidth, playableWindowHeight, myText.TEXT_MARGIN_SIZE,
+          intersect.get(0), intersect.get(1), elapsedTime);
+      moveBlocks(elapsedTime);
+
+      if (ball.lostLife(playableWindowHeight)) {
+        livesLeft--;
+        resetPaddleBall();
+        inPlay = false;
+      }
+      checkWon();
+      myText.updateText(root, livesLeft, blocksHit, blocksBroken, powerUpActive,
+          disAdvActive, won);
+    }
+  }
+
+  /**
+   * Indicates is the Breakout game is still being played
+   *
+   * @return true if game is ongoing, false if game has come to an end (player has won/lost)
+   */
+  public boolean gameIsRunning() {
+    if (won) {
+      return false;
+    }
+    if (livesLeft <= 0) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Returns the results of the game
+   *
+   * @return true if the player has won, false if they have lost
+   */
+  public boolean gameIsWon() {
+    return won;
+  }
+
   private void addBlocksToRoot(Group root) {
     for (List<Block> blkRow : blocks) {
       for (Block blk : blkRow) {
@@ -155,32 +204,6 @@ public class Breakout {
           blk.move(playableWindowWidth, playableWindowWidth, myText.TEXT_MARGIN_SIZE, elapsedTime);
         }
       }
-    }
-  }
-
-  /**
-   * Updates the positions and states of all elements of the game to create the next frame of the
-   * game animation
-   *
-   * @param elapsedTime the amount of time passed between the previous frame and the current frame
-   *                    being made
-   */
-  public void step(double elapsedTime) {
-    if (inPlay) {
-      checkEffects(elapsedTime);
-      List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
-      ball.move(playableWindowWidth, playableWindowHeight, myText.TEXT_MARGIN_SIZE,
-          intersect.get(0), intersect.get(1), elapsedTime);
-      moveBlocks(elapsedTime);
-
-      if (ball.lostLife(playableWindowHeight)) {
-        livesLeft--;
-        resetPaddleBall();
-        inPlay = false;
-      }
-      checkWon();
-      myText.updateText(root, livesLeft, blocksHit, blocksBroken, powerUpActive,
-          disAdvActive, won);
     }
   }
 
@@ -434,29 +457,5 @@ public class Breakout {
     }
     inPlay = false;
     won = true;
-  }
-
-  /**
-   * Indicates is the Breakout game is still being played
-   *
-   * @return true if game is ongoing, false if game has come to an end (player has won/lost)
-   */
-  public boolean gameIsRunning() {
-    if (won) {
-      return false;
-    }
-    if (livesLeft <= 0) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Returns the results of the game
-   *
-   * @return true if the player has won, false if they have lost
-   */
-  public boolean gameIsWon() {
-    return won;
   }
 }

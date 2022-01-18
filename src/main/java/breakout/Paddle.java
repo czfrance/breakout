@@ -74,13 +74,6 @@ public class Paddle extends Rectangle {
     this.setWidth(width);
   }
 
-  private boolean atBorder(int windowWidth, boolean rightBorder) {
-    if (rightBorder) {
-      return this.getX() >= (windowWidth - this.getWidth());
-    }
-    return this.getX() <= 0;
-  }
-
   /**
    * sets the new x position of the paddle
    *
@@ -155,8 +148,14 @@ public class Paddle extends Rectangle {
     }
   }
 
+  private boolean atBorder(int windowWidth, boolean rightBorder) {
+    if (rightBorder) {
+      return this.getX() >= (windowWidth - this.getWidth());
+    }
+    return this.getX() <= 0;
+  }
+
   private double calcNewXLocation(double newWidth) {
     return this.getX() + (this.getWidth() / 2) - (newWidth / 2);
   }
-
 }
