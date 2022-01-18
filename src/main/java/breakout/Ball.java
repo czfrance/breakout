@@ -65,7 +65,6 @@ public class Ball extends ImageView {
     double maxDeviation = percentDev * 180;
     double minAngle = angle - maxDeviation;
     double angleDev = rand.nextDouble(maxDeviation*2+1);
-    //double angleDev = (double) rand.nextInt(1);
     angle = calcNewDeviationAngle(angleDev, minAngle);
   }
 

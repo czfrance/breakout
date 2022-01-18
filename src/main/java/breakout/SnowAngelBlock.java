@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 
 
 public class SnowAngelBlock extends Block {
-  private static final int ICE_RADIUS = 50;
+  private static final int ICE_RADIUS = 100;
 
   public SnowAngelBlock(double x, double y, double w, double h, Image[] imgs,
       int hitsNeeded, int sp, double a) {

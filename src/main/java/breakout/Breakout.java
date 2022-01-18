@@ -46,7 +46,7 @@ public class Breakout {
   public static final String DEC_MAP_FILE = "src/main/resources/december.txt";
   public static final String JAN_MAP_FILE = "src/main/resources/january.txt";
   public static final int BALL_SPEED = 100;
-  public static final int BALL_SIZE = 10;
+  public static final int BALL_SIZE = 30;
   public static final int INIT_BALL_ANGLE = 75;
   public static final int PADDLE_SPEED = 8;
   public static final int PADDLE_HEIGHT = 10;
@@ -57,8 +57,8 @@ public class Breakout {
   public static final List<String> POWERUPS =
       Arrays.asList("winter freeze", "avalanche", "spread the holiday cheer");
   public static final List<String> DISADVGS = Arrays.asList("slippery paddle");
-  public static final int POWERUP_TIME_LIMIT = 5;
-  public static final int DISADV_TIME_LIMIT = 5;
+  public static final int POWERUP_TIME_LIMIT = 15;
+  public static final int DISADV_TIME_LIMIT = 15;
   public static final int TEXT_MARGIN_SIZE = 25;
 
 
@@ -211,7 +211,6 @@ public class Breakout {
     }
   }
 
-  //ERROR WHEN HIT AND BALL IS NOT COMPLETELY WITHIN BLOCK (NEAR CORNERS)
   private List<Boolean> isIntersecting(List<List<Block>> blks, Paddle p, Ball b) {
     for (int i = 0; i < blks.size(); i++) {
       for (int j = 0; j < blks.get(0).size(); j++) {
@@ -246,12 +245,10 @@ public class Breakout {
     Bounds aBounds = a.getBoundsInParent();
     Bounds bBounds = b.getBoundsInParent();
     if (aBounds.intersects(bBounds)) {
-      if (intersectHoriz(aBounds, bBounds)){// || intersectHoriz(bBounds, aBounds)) {
-        System.out.println("horiz");
+      if (intersectHoriz(aBounds, bBounds)){
         ret.set(0, true);
       }
       if (intersectVert(aBounds, bBounds)){
-        System.out.println("vert");
         ret.set(1, true);
       }
     }
@@ -300,10 +297,6 @@ public class Breakout {
   private boolean contains(double a1, double a2, double b) {
     return (a1 <= b && a2 >= b);
   }
-
-//  private boolean contains(double a1, double a2, double b1, double b2) {
-//    return ((a1 < b1 && a2 > b2) || (b1 < a1 && b2 > a2));
-//  }
 
   private void handleKeyInput(KeyCode code) {
     switch (code) {

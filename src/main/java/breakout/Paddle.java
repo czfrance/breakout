@@ -65,7 +65,6 @@ public class Paddle extends Rectangle {
   }
 
   public double getPercentDeviation() {
-    //return 0;
     return percentDeviationRange;
   }
 

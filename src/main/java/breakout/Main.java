@@ -79,7 +79,6 @@ public class Main extends Application {
 
   private void startBreakoutLevel(Stage stage) {
     myGame = new Breakout();
-    System.out.printf("currlvl: %d\n", currLvl);
     // attach scene to the stage and display it
     Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND, currLvl);
     stage.setScene(scene);
