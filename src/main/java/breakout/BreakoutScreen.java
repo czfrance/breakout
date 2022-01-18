@@ -16,13 +16,12 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Random;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 //RULE: ONLY ONE POWERUP AT A TIME
 //IF BALL HITS TOO CLOSE TO EDGE OF BLOCK, IT WILL ROCKET OFF AT DIFFERENT ANGLE
 //BUG: ball sometimes goes through the block, idk why
 
-public class Breakout {
+public class BreakoutScreen extends Screen {
 
   public static final String RESOURCE_PATH = "/";
   public static final String BALL_IMAGE = RESOURCE_PATH + "snowball.png";
@@ -46,7 +45,7 @@ public class Breakout {
   public static final String DEC_MAP_FILE = "src/main/resources/december.txt";
   public static final String JAN_MAP_FILE = "src/main/resources/january.txt";
   public static final int BALL_SPEED = 100;
-  public static final int BALL_SIZE = 30;
+  public static final int BALL_SIZE = 10;
   public static final int INIT_BALL_ANGLE = 75;
   public static final int PADDLE_SPEED = 8;
   public static final int PADDLE_HEIGHT = 10;
@@ -54,13 +53,14 @@ public class Breakout {
   public static final int BASE_BLOCK_SPEED = 0;
   public static final int BLOCK_SPEED_INC = 5;
   public static final int NUM_LIVES = 5;
-  public static final List<String> POWERUPS =
-      Arrays.asList("winter freeze", "avalanche", "spread the holiday cheer");
-  public static final List<String> DISADVGS = Arrays.asList("slippery paddle");
   public static final int POWERUP_TIME_LIMIT = 15;
   public static final int DISADV_TIME_LIMIT = 15;
   public static final int TEXT_MARGIN_SIZE = 25;
-
+  public static final int BASIC_FONT_SIZE = 18;
+  public static final int TITLE_FONT_SIZE = 50;
+  public static final List<String> POWERUPS =
+      Arrays.asList("winter freeze", "avalanche", "spread the holiday cheer");
+  public static final List<String> DISADVGS = Arrays.asList("slippery paddle");
 
   private int blockWidth;
   private int blockHeight;
@@ -80,7 +80,6 @@ public class Breakout {
   private List<List<Block>> blocks;
   private int wWidth;
   private int wHeight;
-  private Group root = new Group();
   private boolean inPlay = false;
   private boolean won = false;
 
@@ -104,15 +103,15 @@ public class Breakout {
   public Scene setupGame(int width, int height, Paint background, int lvl) {
     level = lvl;
 
-    lvlTextLoc = new double[] {5, TEXT_MARGIN_SIZE-5};
-    livesTextLoc = new double[] {width/5, TEXT_MARGIN_SIZE-5};
-    hitsTextLoc = new double[] {width/3+30, TEXT_MARGIN_SIZE-5};
-    destroyedTextLoc = new double[] {2*(width/3), TEXT_MARGIN_SIZE-5};
-    powerupTextLoc = new double[] {5, height-5};
-    disadvTextLoc = new double[] {width/2, height-5};
+    lvlTextLoc = new double[]{5, TEXT_MARGIN_SIZE - 5};
+    livesTextLoc = new double[]{width / 5, TEXT_MARGIN_SIZE - 5};
+    hitsTextLoc = new double[]{width / 3 + 30, TEXT_MARGIN_SIZE - 5};
+    destroyedTextLoc = new double[]{2 * (width / 3), TEXT_MARGIN_SIZE - 5};
+    powerupTextLoc = new double[]{5, height - 5};
+    disadvTextLoc = new double[]{width / 2, height - 5};
 
-    wWidth = width-2;
-    wHeight = height-(TEXT_MARGIN_SIZE);
+    wWidth = width - 2;
+    wHeight = height - (TEXT_MARGIN_SIZE);
 
     powerUpActive = null;
     disAdvActive = null;
@@ -122,8 +121,8 @@ public class Breakout {
         new Image(getClass().getResourceAsStream(PADDLE_SLIP_IMAGE))};
 
     ball = new Ball(BALL_SIZE, BALL_SPEED, INIT_BALL_ANGLE, ball_img,
-        wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1));
-    paddle = new Paddle(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT,
+        wWidth / 2 - BALL_SIZE / 2, wHeight - (PADDLE_HEIGHT + BALL_SIZE + 1));
+    paddle = new Paddle(wWidth / 2 - PADDLE_WIDTH / 2, wHeight - PADDLE_HEIGHT,
         PADDLE_WIDTH, PADDLE_HEIGHT, paddle_imgs);
 
     String map = getMap(level);
@@ -152,9 +151,15 @@ public class Breakout {
 
   private String getMap(int lvl) {
     switch (lvl) {
-      case 1 -> {return NOV_MAP_FILE;}
-      case 2 -> {return DEC_MAP_FILE;}
-      default -> {return JAN_MAP_FILE;}
+      case 1 -> {
+        return NOV_MAP_FILE;
+      }
+      case 2 -> {
+        return DEC_MAP_FILE;
+      }
+      default -> {
+        return JAN_MAP_FILE;
+      }
     }
   }
 
@@ -187,25 +192,23 @@ public class Breakout {
   }
 
   private void resetPaddleBall() {
-    ball.setSpecifics(wWidth/2-BALL_SIZE/2, wHeight-(PADDLE_HEIGHT+BALL_SIZE+1),
+    ball.setSpecifics(wWidth / 2 - BALL_SIZE / 2, wHeight - (PADDLE_HEIGHT + BALL_SIZE + 1),
         BALL_SIZE, BALL_SPEED);
-    paddle.setSpecifics(wWidth/2-PADDLE_WIDTH/2, wHeight-PADDLE_HEIGHT, PADDLE_WIDTH);
+    paddle.setSpecifics(wWidth / 2 - PADDLE_WIDTH / 2, wHeight - PADDLE_HEIGHT, PADDLE_WIDTH);
   }
 
   private void checkEffects(double elapsedTime) {
     if (powerUpActive != null) {
       if (powerUpActiveTime <= POWERUP_TIME_LIMIT) {
         powerUpActiveTime += elapsedTime;
-      }
-      else {
+      } else {
         stopPowerUp();
       }
     }
-    if (disAdvActive != null){
+    if (disAdvActive != null) {
       if (disAdvActiveTime <= DISADV_TIME_LIMIT) {
         disAdvActiveTime += elapsedTime;
-      }
-      else {
+      } else {
         stopDisAdv();
       }
     }
@@ -230,7 +233,9 @@ public class Breakout {
     if (paddleIntersect.contains(true)) {
       p.hit();
       b.deviatePath(p.getPercentDeviation());
-      if (p.isSlippery()) {b.slip();}
+      if (p.isSlippery()) {
+        b.slip();
+      }
     }
     return paddleIntersect;
   }
@@ -245,10 +250,10 @@ public class Breakout {
     Bounds aBounds = a.getBoundsInParent();
     Bounds bBounds = b.getBoundsInParent();
     if (aBounds.intersects(bBounds)) {
-      if (intersectHoriz(aBounds, bBounds)){
+      if (intersectHoriz(aBounds, bBounds)) {
         ret.set(0, true);
       }
-      if (intersectVert(aBounds, bBounds)){
+      if (intersectVert(aBounds, bBounds)) {
         ret.set(1, true);
       }
     }
@@ -258,35 +263,33 @@ public class Breakout {
   private boolean intersectHoriz(Bounds a, Bounds b) {
     double centerX = a.getCenterX();
     double centerY = a.getCenterY();
-    double extraX = Math.min(Math.abs(centerX-b.getMaxX()), Math.abs(centerX-b.getMinX()));
+    double extraX = Math.min(Math.abs(centerX - b.getMaxX()), Math.abs(centerX - b.getMinX()));
     double minX = b.getMinX() - extraX;
     double maxX = b.getMaxX() + extraX;
-    if (!contains(b.getMinY(), b.getMaxY(), centerY)){
+    if (!contains(b.getMinY(), b.getMaxY(), centerY)) {
       if (contains(b.getMinX(), b.getMaxX(), centerX)) {
         return true;
-      }
-      else if (contains(minX, maxX, centerX)) {
+      } else if (contains(minX, maxX, centerX)) {
         return true;
       }
       return false;
     }
     return false;
-      //if y coord of ball is not in bounds of block y
-      //and if center x of ball is within (block min x - abs(ballcenter-blockmaxx)) or
-      //(block )block maxx + abs(ballcenter-blockmaxx)) then horz intersect
+    //if y coord of ball is not in bounds of block y
+    //and if center x of ball is within (block min x - abs(ballcenter-blockmaxx)) or
+    //(block )block maxx + abs(ballcenter-blockmaxx)) then horz intersect
   }
 
   private boolean intersectVert(Bounds a, Bounds b) {
     double centerX = a.getCenterX();
     double centerY = a.getCenterY();
-    double extraY = Math.min(Math.abs(centerY-b.getMaxY()), Math.abs(centerY-b.getMinY()));
+    double extraY = Math.min(Math.abs(centerY - b.getMaxY()), Math.abs(centerY - b.getMinY()));
     double minY = b.getMinY() - extraY;
     double maxY = b.getMaxY() + extraY;
-    if (!contains(b.getMinX(), b.getMaxX(), centerX)){
+    if (!contains(b.getMinX(), b.getMaxX(), centerX)) {
       if (contains(b.getMinY(), b.getMaxY(), centerY)) {
         return true;
-      }
-      else if (contains(minY, maxY, centerY)) {
+      } else if (contains(minY, maxY, centerY)) {
         return true;
       }
       return false;
@@ -300,8 +303,16 @@ public class Breakout {
 
   private void handleKeyInput(KeyCode code) {
     switch (code) {
-      case RIGHT -> {if (inPlay) {paddle.setX(paddle.newPaddleX(true, wWidth, PADDLE_SPEED));}}
-      case LEFT -> {if (inPlay) {paddle.setX(paddle.newPaddleX(false, wWidth, PADDLE_SPEED));}}
+      case RIGHT -> {
+        if (inPlay) {
+          paddle.setX(paddle.newPaddleX(true, wWidth, PADDLE_SPEED));
+        }
+      }
+      case LEFT -> {
+        if (inPlay) {
+          paddle.setX(paddle.newPaddleX(false, wWidth, PADDLE_SPEED));
+        }
+      }
       case UP, DOWN -> paddle.setX(paddle.getX());
       case S -> ball.incSpeed();
       case L -> livesLeft++;
@@ -339,10 +350,9 @@ public class Breakout {
         new Image(getClass().getResourceAsStream(BLACK_ICED_IMAGE))};
 
     FileReader map = null;
-    try{
+    try {
       map = new FileReader(mapFile);
-    }
-    catch (FileNotFoundException e) {
+    } catch (FileNotFoundException e) {
       System.out.println("Incorrect File");
     }
 
@@ -353,7 +363,7 @@ public class Breakout {
     blockWidth = wWidth / numCols;
     blockHeight = wWidth / numRows;
 
-    int blockSpeed = BASE_BLOCK_SPEED+((level-1)*BLOCK_SPEED_INC);
+    int blockSpeed = BASE_BLOCK_SPEED + ((level - 1) * BLOCK_SPEED_INC);
     int colIndex = 0;
     int rowIndex = 0;
     int c = inStream.read();
@@ -362,33 +372,33 @@ public class Breakout {
     double angle;
     while (c != -1) {
       angle = rand.nextInt(361);
-      switch(c) {
+      switch (c) {
         case 10 -> {
           rowIndex++;
           colIndex = 0;
           blocks.add(new ArrayList<Block>());
         }
         case 32 -> colIndex++;
-        case 49 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
-            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, ice_imgs,
+        case 49 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex * blockWidth + 1,
+            rowIndex * blockHeight + TEXT_MARGIN_SIZE, blockWidth, blockHeight, ice_imgs,
             1, blockSpeed, angle));
-        case 50 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
-            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, wood_imgs,
+        case 50 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex * blockWidth + 1,
+            rowIndex * blockHeight + TEXT_MARGIN_SIZE, blockWidth, blockHeight, wood_imgs,
             2, blockSpeed, angle));
-        case 51 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
-            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, brick_imgs,
+        case 51 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex * blockWidth + 1,
+            rowIndex * blockHeight + TEXT_MARGIN_SIZE, blockWidth, blockHeight, brick_imgs,
             3, blockSpeed, angle));
-        case 52 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
-            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, concrete_imgs,
+        case 52 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex * blockWidth + 1,
+            rowIndex * blockHeight + TEXT_MARGIN_SIZE, blockWidth, blockHeight, concrete_imgs,
             4, blockSpeed, angle));
-        case 53 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex*blockWidth+1,
-            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, steel_imgs,
+        case 53 -> blocks.get(rowIndex).add(colIndex, new Block(colIndex * blockWidth + 1,
+            rowIndex * blockHeight + TEXT_MARGIN_SIZE, blockWidth, blockHeight, steel_imgs,
             5, blockSpeed, angle));
-        case 65 -> blocks.get(rowIndex).add(colIndex, new SnowAngelBlock(colIndex*blockWidth+1,
-            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, snow_angel_imgs,
+        case 65 -> blocks.get(rowIndex).add(colIndex, new SnowAngelBlock(colIndex * blockWidth + 1,
+            rowIndex * blockHeight + TEXT_MARGIN_SIZE, blockWidth, blockHeight, snow_angel_imgs,
             3, blockSpeed, angle));
-        case 66 -> blocks.get(rowIndex).add(colIndex, new BlackIceBlock(colIndex*blockWidth+1,
-            rowIndex*blockHeight+TEXT_MARGIN_SIZE, blockWidth, blockHeight, black_imgs,
+        case 66 -> blocks.get(rowIndex).add(colIndex, new BlackIceBlock(colIndex * blockWidth + 1,
+            rowIndex * blockHeight + TEXT_MARGIN_SIZE, blockWidth, blockHeight, black_imgs,
             3, blockSpeed, angle));
         default -> blocks.get(rowIndex).add(colIndex, null);
       }
@@ -409,8 +419,7 @@ public class Breakout {
       String effect = ((BlackIceBlock) b).getEffect(POWERUPS, DISADVGS);
       if (POWERUPS.contains(effect) && powerUpActive == null) {
         doPowerUp(effect, b);
-      }
-      else if (DISADVGS.contains(effect) && disAdvActive == null) {
+      } else if (DISADVGS.contains(effect) && disAdvActive == null) {
         doDisAdv(effect);
       }
     }
@@ -452,15 +461,21 @@ public class Breakout {
   private void winterFreeze(boolean start) {
     for (List<Block> blkRow : blocks) {
       for (Block blk : blkRow) {
-        if (blk != null && start) { blk.freeze(); }
-        else if (blk != null && !start) { blk.unfreeze(); }
+        if (blk != null && start) {
+          blk.freeze();
+        } else if (blk != null && !start) {
+          blk.unfreeze();
+        }
       }
     }
   }
 
   private void avalanche(boolean start) {
-    if (start) {ball.makeAvalanche();}
-    else {ball.unAvalanche();}
+    if (start) {
+      ball.makeAvalanche();
+    } else {
+      ball.unAvalanche();
+    }
   }
 
   private void spreadHolidayCheer(BlackIceBlock blk) {
@@ -473,7 +488,9 @@ public class Breakout {
   private void deepFreeze() {
     for (List<Block> blkRow : blocks) {
       for (Block blk : blkRow) {
-        if (blk != null) { blk.makeIced(); }
+        if (blk != null) {
+          blk.makeIced();
+        }
       }
     }
   }
@@ -515,60 +532,44 @@ public class Breakout {
   }
 
   private void drawText(Group root) {
-    Font f = new Font(18);
-    lvlText.setText("Level: " + level);
+
+    setBasicTextOptions(lvlText, "Level: " + level, BASIC_FONT_SIZE, Color.LIGHTBLUE);
     lvlText.setX(lvlTextLoc[0]);
     lvlText.setY(lvlTextLoc[1]);
-    lvlText.setFont(f);
-    lvlText.setFill(Color.LIGHTBLUE);
 
-    lives.setText("Lives: " + livesLeft);
+    setBasicTextOptions(lives, "Lives: " + livesLeft, BASIC_FONT_SIZE, Color.LIGHTBLUE);
     lives.setX(livesTextLoc[0]);
     lives.setY(livesTextLoc[1]);
-    lives.setFont(f);
-    lives.setFill(Color.LIGHTBLUE);
 
-    hit.setText("Blocks Hit: " + blocksHit);
+    setBasicTextOptions(hit, "Blocks Hit: " + blocksHit, BASIC_FONT_SIZE, Color.LIGHTBLUE);
     hit.setX(hitsTextLoc[0]);
     hit.setY(hitsTextLoc[1]);
-    hit.setFont(f);
-    hit.setFill(Color.LIGHTBLUE);
 
-    destroyed.setText("Blocks Destroyed: " + blocksBroken);
+    setBasicTextOptions(destroyed, "Blocks Destroyed: " + blocksBroken,
+        BASIC_FONT_SIZE, Color.LIGHTBLUE);
     destroyed.setX(destroyedTextLoc[0]);
     destroyed.setY(destroyedTextLoc[1]);
-    destroyed.setFont(f);
-    destroyed.setFill(Color.LIGHTBLUE);
 
-    currPower.setText("Power Up: --");
+    setBasicTextOptions(currPower, "Power Up: --", BASIC_FONT_SIZE, Color.LIGHTBLUE);
     currPower.setX(powerupTextLoc[0]);
     currPower.setY(powerupTextLoc[1]);
-    currPower.setFont(f);
-    currPower.setFill(Color.LIGHTBLUE);
 
-    currDisAdv.setText("Disadvantage: --");
+    setBasicTextOptions(currDisAdv, "Disadvantage: --", BASIC_FONT_SIZE, Color.LIGHTBLUE);
     currDisAdv.setX(disadvTextLoc[0]);
     currDisAdv.setY(disadvTextLoc[1]);
-    currDisAdv.setFont(f);
-    currDisAdv.setFill(Color.LIGHTBLUE);
 
-    winMsg.setText("YOU WIN!");
-    winMsg.setFont(new Font(50));
-    winMsg.setFill(Color.MEDIUMSPRINGGREEN);
-    winMsg.setX(wWidth/2 - winMsg.getBoundsInParent().getWidth()/2);
-    winMsg.setY(2*(wHeight/5));
+    setBasicTextOptions(winMsg, "YOU WIN!", TITLE_FONT_SIZE, Color.MEDIUMSPRINGGREEN);
+    winMsg.setX(wWidth / 2 - winMsg.getBoundsInParent().getWidth() / 2);
+    winMsg.setY(2 * (wHeight / 5));
 
-    nextLvlMsg.setText("Press enter to continue");
-    nextLvlMsg.setFont(f);
-    nextLvlMsg.setFill(Color.MEDIUMSPRINGGREEN);
-    nextLvlMsg.setX(wWidth/2 - nextLvlMsg.getBoundsInParent().getWidth()/2);
-    nextLvlMsg.setY(2*(wHeight/5) + 2*winMsg.getBoundsInParent().getHeight());
+    setBasicTextOptions(nextLvlMsg, "Press enter to continue",
+        BASIC_FONT_SIZE, Color.MEDIUMSPRINGGREEN);
+    nextLvlMsg.setX(wWidth / 2 - nextLvlMsg.getBoundsInParent().getWidth() / 2);
+    nextLvlMsg.setY(2 * (wHeight / 5) + 2 * winMsg.getBoundsInParent().getHeight());
 
-    loseMsg.setText("YOU LOSE");
-    loseMsg.setFont(new Font(50));
-    loseMsg.setFill(Color.MEDIUMSPRINGGREEN);
-    loseMsg.setX(wWidth/2 - loseMsg.getBoundsInParent().getWidth()/2);
-    loseMsg.setY(2*(wHeight/5));
+    setBasicTextOptions(loseMsg, "YOU LOSE", TITLE_FONT_SIZE, Color.MEDIUMSPRINGGREEN);
+    loseMsg.setX(wWidth / 2 - loseMsg.getBoundsInParent().getWidth() / 2);
+    loseMsg.setY(2 * (wHeight / 5));
 
     root.getChildren().add(lives);
     root.getChildren().add(hit);
@@ -585,13 +586,15 @@ public class Breakout {
 
     if (powerUpActive == null) {
       currPower.setText("Power Up: --");
+    } else {
+      currPower.setText("Power Up: " + powerUpActive);
     }
-    else {currPower.setText("Power Up: " + powerUpActive);}
 
     if (disAdvActive == null) {
       currDisAdv.setText("Disadvantage: --");
+    } else {
+      currDisAdv.setText("Disadvantage: " + disAdvActive);
     }
-    else {currDisAdv.setText("Disadvantage: " + disAdvActive);}
 
     if (won) {
       root.getChildren().add(winMsg);
