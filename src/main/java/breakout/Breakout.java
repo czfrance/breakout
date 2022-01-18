@@ -19,39 +19,8 @@ import java.util.Random;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 //RULE: ONLY ONE POWERUP AT A TIME
-/*
-    TODOS:
-       1 **Figure out how to get bounce correctly
-      .  2 Implement paddle count system -> randomness of bounce back depends on # bounces
-           * need to differentiate block bounce from paddle?
-      . 3 get all blocks, paddles, balls images
-      . 4 read from picture files
-      . 5 game end when touch ball bottom of screen
-      . 6 block hit counter
-      . 7 get blocks to move
-      . 8 life & block destroyed counter
-      . 9 slippery paddle
-      x 10 specials flurries
-      . 11 Block specials
-            * snow angel, black ice
-      . 12 all power ups + deep freeze
-      .  12.5 check all powerups, disadvantages
-      . 13 planned cheat keys
-      . 14 different game screens
-      . 15 add additional cheat keys
-       16 properly format & document everything
-
-       by section:
-       * debugging
-      . * pre-reqs (preparing all materials & images)
-      . * general game operations (when game end, creating pictures, counters)
-      . * game screens
-      . * blocks
-      . * paddles
-      . * power ups
-      . * cheat keys
-       * format & document
- */
+//IF BALL HITS TOO CLOSE TO EDGE OF BLOCK, IT WILL ROCKET OFF AT DIFFERENT ANGLE
+//BUG: ball sometimes goes through the block, idk why
 
 public class Breakout {
 
@@ -78,7 +47,7 @@ public class Breakout {
   public static final String JAN_MAP_FILE = "src/main/resources/january.txt";
   public static final int BALL_SPEED = 100;
   public static final int BALL_SIZE = 10;
-  public static final int INIT_BALL_ANGLE = 75; //default to 75
+  public static final int INIT_BALL_ANGLE = 75;
   public static final int PADDLE_SPEED = 8;
   public static final int PADDLE_HEIGHT = 10;
   public static final int PADDLE_WIDTH = 75;
@@ -200,7 +169,6 @@ public class Breakout {
   }
 
   public boolean step(double elapsedTime) {
-    System.out.printf("elapsedTime: %f\n", elapsedTime);
     if (inPlay) {
       checkEffects(elapsedTime);
       List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
@@ -248,7 +216,7 @@ public class Breakout {
     for (int i = 0; i < blks.size(); i++) {
       for (int j = 0; j < blks.get(0).size(); j++) {
         Block curr = blks.get(i).get(j);
-        List<Boolean> ret = intersect(curr, b);
+        List<Boolean> ret = intersect(b, curr);
         if (ret.get(0) || ret.get(1)) {
           blockIsHit(curr);
           if (curr.broken()) {
@@ -259,7 +227,7 @@ public class Breakout {
       }
     }
 
-    List<Boolean> paddleIntersect = intersect(p, b);
+    List<Boolean> paddleIntersect = intersect(b, p);
     if (paddleIntersect.contains(true)) {
       p.hit();
       b.deviatePath(p.getPercentDeviation());
@@ -278,19 +246,64 @@ public class Breakout {
     Bounds aBounds = a.getBoundsInParent();
     Bounds bBounds = b.getBoundsInParent();
     if (aBounds.intersects(bBounds)) {
-      if (contains(aBounds.getMinX(), aBounds.getMaxX(), bBounds.getMinX(), bBounds.getMaxX())) {
+      if (intersectHoriz(aBounds, bBounds)){// || intersectHoriz(bBounds, aBounds)) {
+        System.out.println("horiz");
         ret.set(0, true);
-        return ret;
       }
-      ret.set(1, true);
-      return ret;
+      if (intersectVert(aBounds, bBounds)){
+        System.out.println("vert");
+        ret.set(1, true);
+      }
     }
     return ret;
   }
 
-  private boolean contains(double a1, double a2, double b1, double b2) {
-    return ((a1 < b1 && a2 > b2) || (b1 < a1 && b2 > a2));
+  private boolean intersectHoriz(Bounds a, Bounds b) {
+    double centerX = a.getCenterX();
+    double centerY = a.getCenterY();
+    double extraX = Math.min(Math.abs(centerX-b.getMaxX()), Math.abs(centerX-b.getMinX()));
+    double minX = b.getMinX() - extraX;
+    double maxX = b.getMaxX() + extraX;
+    if (!contains(b.getMinY(), b.getMaxY(), centerY)){
+      if (contains(b.getMinX(), b.getMaxX(), centerX)) {
+        return true;
+      }
+      else if (contains(minX, maxX, centerX)) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+      //if y coord of ball is not in bounds of block y
+      //and if center x of ball is within (block min x - abs(ballcenter-blockmaxx)) or
+      //(block )block maxx + abs(ballcenter-blockmaxx)) then horz intersect
   }
+
+  private boolean intersectVert(Bounds a, Bounds b) {
+    double centerX = a.getCenterX();
+    double centerY = a.getCenterY();
+    double extraY = Math.min(Math.abs(centerY-b.getMaxY()), Math.abs(centerY-b.getMinY()));
+    double minY = b.getMinY() - extraY;
+    double maxY = b.getMaxY() + extraY;
+    if (!contains(b.getMinX(), b.getMaxX(), centerX)){
+      if (contains(b.getMinY(), b.getMaxY(), centerY)) {
+        return true;
+      }
+      else if (contains(minY, maxY, centerY)) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  private boolean contains(double a1, double a2, double b) {
+    return (a1 <= b && a2 >= b);
+  }
+
+//  private boolean contains(double a1, double a2, double b1, double b2) {
+//    return ((a1 < b1 && a2 > b2) || (b1 < a1 && b2 > a2));
+//  }
 
   private void handleKeyInput(KeyCode code) {
     switch (code) {
