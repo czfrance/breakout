@@ -1,13 +1,13 @@
 package breakout;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.paint.Paint;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
@@ -28,7 +28,7 @@ public class Main extends Application {
   public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
   public static final int NUM_LVLS = 3;
 
-  private BreakoutScreen myGame;
+  private Breakout myGame;
   private SplashScreen mySplash;
   private ResultsScreen myResults;
 
@@ -60,7 +60,7 @@ public class Main extends Application {
   }
 
   private void startBreakoutLevel(Stage stage) {
-    myGame = new BreakoutScreen();
+    myGame = new Breakout();
     // attach scene to the stage and display it
     Scene scene = myGame.setupGame(WIDTH, HEIGHT, BACKGROUND, currLvl);
     setupAndDisplayScene(stage, scene, TITLE);

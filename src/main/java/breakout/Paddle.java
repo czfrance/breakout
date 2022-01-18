@@ -1,8 +1,8 @@
 package breakout;
 
+import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.image.Image;
 
 /*
     RESOURCES
@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
  */
 
 public class Paddle extends Rectangle {
+
   private static final double MAX_DEVIATION = 0.5;
   private static final double DEVIATION_INCREMENT = 0.016; //31.25 bounces to get to full deviation
   private static final int SIZE_INCREASE = 30;
@@ -48,7 +49,7 @@ public class Paddle extends Rectangle {
   }
 
   public void hit() {
-    if (percentDeviationRange < MAX_DEVIATION-DEVIATION_INCREMENT) {
+    if (percentDeviationRange < MAX_DEVIATION - DEVIATION_INCREMENT) {
       percentDeviationRange += DEVIATION_INCREMENT;
     }
   }
@@ -57,8 +58,7 @@ public class Paddle extends Rectangle {
     if (active) {
       slippery = true;
       this.setFill(new ImagePattern(images[1]));
-    }
-    else {
+    } else {
       slippery = false;
       this.setFill(new ImagePattern(images[0]));
     }

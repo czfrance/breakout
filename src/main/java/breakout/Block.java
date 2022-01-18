@@ -1,21 +1,22 @@
 package breakout;
 
+import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.image.Image;
 
 public class Block extends Rectangle {
-  private Image[] images;
+
+  private final Image[] images;
   private int hitsToBreak;
   private boolean isIced = false;
-  private int speed;
+  private final int speed;
   private int currSpeed;
   private double angle;
   double speedFraction = 0.001;
 
   public Block(double x, double y, double w, double h, Image[] imgs, int hitsNeeded, int sp,
       double a) {
-    super(x+1, y+1, w, h);
+    super(x + 1, y + 1, w, h);
     hitsToBreak = hitsNeeded;
     speed = sp;
     currSpeed = speed;
@@ -37,25 +38,20 @@ public class Block extends Rectangle {
       angle = 360 - angle;
     }
 
-    this.setX(this.getX() + (currSpeed*speedFraction*Math.cos(Math.toRadians(angle)))*elapsedTime);
-    this.setY(this.getY() - (currSpeed*speedFraction*Math.sin(Math.toRadians(angle)))*elapsedTime);
+    this.setX(
+        this.getX() + (currSpeed * speedFraction * Math.cos(Math.toRadians(angle))) * elapsedTime);
+    this.setY(
+        this.getY() - (currSpeed * speedFraction * Math.sin(Math.toRadians(angle))) * elapsedTime);
 
-    if (speedFraction < 1) {speedFraction += 0.0001;}
-  }
-
-  private boolean onVertBorder(int w) {
-    return this.getX() >= (w - this.getWidth()) || this.getX() <= 0;
-  }
-
-  private boolean onHorizBorder(int h, int margin) {
-    return this.getY() >= (h - this.getHeight()) || this.getY() <= margin;
+    if (speedFraction < 1) {
+      speedFraction += 0.0001;
+    }
   }
 
   public void hit() {
     if (isIced) {
       hitsToBreak -= 2;
-    }
-    else {
+    } else {
       hitsToBreak--;
     }
   }
@@ -75,5 +71,13 @@ public class Block extends Rectangle {
 
   public void unfreeze() {
     currSpeed = speed;
+  }
+
+  private boolean onVertBorder(int w) {
+    return this.getX() >= (w - this.getWidth()) || this.getX() <= 0;
+  }
+
+  private boolean onHorizBorder(int h, int margin) {
+    return this.getY() >= (h - this.getHeight()) || this.getY() <= margin;
   }
 }
