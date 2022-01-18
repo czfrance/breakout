@@ -11,9 +11,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * Welcome to Breakout: Winter Wonderland!
- * This is a classic breakout game with a wintery twist.
- * Project for Duke University's CS 308
+ * Breakout: Winter Wonderland's Main class The purpose of this class is to create & start the
+ * Breakout game Extends Application
  *
  * @author Cynthia France
  */
@@ -29,8 +28,6 @@ public class Main extends Application {
   public static final int NUM_LVLS = 3;
 
   private Breakout myGame;
-  private SplashScreen mySplash;
-  private ResultsScreen myResults;
 
   private int currLvl = 1;
   private boolean win = false;
@@ -44,7 +41,7 @@ public class Main extends Application {
   }
 
   private void displaySplash(Stage stage) {
-    mySplash = new SplashScreen();
+    SplashScreen mySplash = new SplashScreen();
 
     Scene scene = mySplash.drawScene(WIDTH, HEIGHT, BACKGROUND, currLvl);
     setupAndDisplayScene(stage, scene, TITLE);
@@ -53,7 +50,7 @@ public class Main extends Application {
   }
 
   private void displayResults(Stage stage) {
-    myResults = new ResultsScreen();
+    ResultsScreen myResults = new ResultsScreen();
 
     Scene scene = myResults.drawScene(WIDTH, HEIGHT, BACKGROUND, win);
     setupAndDisplayScene(stage, scene, TITLE);
@@ -77,6 +74,8 @@ public class Main extends Application {
       case DIGIT1 -> jumpToLvl(1, stage, null);
       case DIGIT2 -> jumpToLvl(2, stage, null);
       case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 -> jumpToLvl(3, stage, null);
+      default -> {
+      }
     }
   }
 
@@ -100,6 +99,8 @@ public class Main extends Application {
       case DIGIT1 -> jumpToLvl(1, stage, animation);
       case DIGIT2 -> jumpToLvl(2, stage, animation);
       case DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9 -> jumpToLvl(3, stage, animation);
+      default -> {
+      }
     }
   }
 

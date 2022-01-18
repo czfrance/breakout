@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -18,6 +19,23 @@ import javafx.scene.paint.Paint;
 //IF BALL HITS TOO CLOSE TO EDGE OF BLOCK, IT WILL ROCKET OFF AT DIFFERENT ANGLE
 //BUG: ball sometimes goes through the block, idk why
 
+/**
+ * Breakout is the meat of Breakout: Winter Wonderland. This class is used to build the Breakout
+ * game and obtain subsequent animation frames. All game logic takes place in this class
+ * <p>
+ * Use an Animation or Timeline class to play the game Breakout codes.
+ * <p>
+ * Depends on BufferedReader, FileReader, ArrayList, Arrays, List, Ransom, Group, Scene, Image,
+ * KeyCode, Paint. Utilizes Ball, Block, BreakoutImages, BreakoutText, Paddle, BlackIceBlock, and
+ * SnowAngelBlock classes from the same project
+ * <p>
+ * To use: Breakout myGame = new Breakout(); then use setupGame() to set the game up, and
+ * Animation.play() to play. See Main class for more detailed example
+ *
+ * @author Cynthia France
+ * @see Main
+ * @see Timeline
+ */
 public class Breakout {
 
   public static final String NOV_MAP_FILE = "src/main/resources/november.txt";
@@ -52,13 +70,22 @@ public class Breakout {
   private List<List<Block>> blocks;
   private BreakoutText myText;
   private BreakoutImages myImages;
-  private int wWidth;
-  private int wHeight;
+  private int playableWindowWidth;
+  private int playableWindowHeight;
   private boolean inPlay = false;
   private boolean won = false;
 
-  private Group root = new Group();
+  private final Group root = new Group();
 
+  /**
+   * Sets up the first screen of Breakout. Loads ball, paddle, all blocks, and text
+   *
+   * @param width      the width of the window the scene will be displayed in
+   * @param height     the height of the window the scene will be displayed in
+   * @param background the background color of the scene
+   * @param lvl        the Breakout level to be played
+   * @return the Scene created, the first panel of our Breakout game
+   */
   public Scene setupGame(int width, int height, Paint background, int lvl) {
     level = lvl;
     int blockMargin = 1;
@@ -66,13 +93,15 @@ public class Breakout {
     myText = new BreakoutText(width, height);
     myImages = new BreakoutImages();
 
-    wWidth = width - 2 * blockMargin;
-    wHeight = height - (myText.TEXT_MARGIN_SIZE);
+    playableWindowWidth = width - 2 * blockMargin;
+    playableWindowHeight = height - (myText.TEXT_MARGIN_SIZE);
 
     ball = new Ball(BALL_SIZE, BALL_SPEED, INIT_BALL_ANGLE, myImages.getBallImg(),
-        wWidth / 2 - BALL_SIZE / 2, wHeight - (PADDLE_HEIGHT + BALL_SIZE + 1));
-    paddle = new Paddle(wWidth / 2 - PADDLE_WIDTH / 2, wHeight - PADDLE_HEIGHT,
-        PADDLE_WIDTH, PADDLE_HEIGHT, myImages.getPaddleImgs());
+        playableWindowWidth / 2 - BALL_SIZE / 2,
+        playableWindowHeight - (PADDLE_HEIGHT + BALL_SIZE + 1));
+    paddle = new Paddle(playableWindowWidth / 2 - PADDLE_WIDTH / 2,
+        playableWindowHeight - PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, myImages.getPaddleImgs(),
+        PADDLE_SPEED);
 
     powerUpActive = null;
     disAdvActive = null;
@@ -119,24 +148,32 @@ public class Breakout {
     }
   }
 
-  public void moveBlocks(double elapsedTime) {
+  private void moveBlocks(double elapsedTime) {
     for (List<Block> blkRow : blocks) {
       for (Block blk : blkRow) {
         if (blk != null) {
-          blk.move(wWidth, wWidth, myText.TEXT_MARGIN_SIZE, elapsedTime);
+          blk.move(playableWindowWidth, playableWindowWidth, myText.TEXT_MARGIN_SIZE, elapsedTime);
         }
       }
     }
   }
 
-  public boolean step(double elapsedTime) {
+  /**
+   * Updates the positions and states of all elements of the game to create the next frame of the
+   * game animation
+   *
+   * @param elapsedTime the amount of time passed between the previous frame and the current frame
+   *                    being made
+   */
+  public void step(double elapsedTime) {
     if (inPlay) {
       checkEffects(elapsedTime);
       List<Boolean> intersect = isIntersecting(blocks, paddle, ball);
-      ball.move(wWidth, wHeight, myText.TEXT_MARGIN_SIZE, intersect.get(0), intersect.get(1), elapsedTime);
+      ball.move(playableWindowWidth, playableWindowHeight, myText.TEXT_MARGIN_SIZE,
+          intersect.get(0), intersect.get(1), elapsedTime);
       moveBlocks(elapsedTime);
 
-      if (ball.lostLife(wHeight)) {
+      if (ball.lostLife(playableWindowHeight)) {
         livesLeft--;
         resetPaddleBall();
         inPlay = false;
@@ -145,13 +182,15 @@ public class Breakout {
       myText.updateText(root, livesLeft, blocksHit, blocksBroken, powerUpActive,
           disAdvActive, won);
     }
-    return gameIsRunning();
   }
 
   private void resetPaddleBall() {
-    ball.setSpecifics(wWidth / 2 - BALL_SIZE / 2, wHeight - (PADDLE_HEIGHT + BALL_SIZE + 1),
+    ball.setSpecifics(
+        playableWindowWidth / 2 - BALL_SIZE / 2,
+        playableWindowHeight - (PADDLE_HEIGHT + BALL_SIZE + 1),
         BALL_SIZE, BALL_SPEED);
-    paddle.setSpecifics(wWidth / 2 - PADDLE_WIDTH / 2, wHeight - PADDLE_HEIGHT, PADDLE_WIDTH);
+    paddle.setSpecifics(playableWindowWidth / 2 - PADDLE_WIDTH / 2,
+        playableWindowHeight - PADDLE_HEIGHT, PADDLE_WIDTH);
   }
 
   private void checkEffects(double elapsedTime) {
@@ -175,10 +214,10 @@ public class Breakout {
     for (int i = 0; i < blks.size(); i++) {
       for (int j = 0; j < blks.get(0).size(); j++) {
         Block curr = blks.get(i).get(j);
-        List<Boolean> ret = ball.intersects(curr);
+        List<Boolean> ret = ball.intersectsWith(curr);
         if (ret.get(0) || ret.get(1)) {
           blockIsHit(curr);
-          if (curr.broken()) {
+          if (curr.isBroken()) {
             destroyBlock(i, j);
           }
           return ret;
@@ -186,7 +225,7 @@ public class Breakout {
       }
     }
 
-    List<Boolean> paddleIntersect = ball.intersects(p);
+    List<Boolean> paddleIntersect = ball.intersectsWith(p);
     if (paddleIntersect.contains(true)) {
       p.hit();
       b.deviatePath(p.getPercentDeviation());
@@ -204,7 +243,7 @@ public class Breakout {
       case UP, DOWN -> paddle.setX(paddle.getX());
       case S -> ball.incSpeed();
       case L -> livesLeft++;
-      case E -> paddle.enlargePaddle(wWidth);
+      case E -> paddle.enlargePaddle(playableWindowWidth);
       case D -> doPowerUp("deep freeze", null);
       case F -> {
         inPlay = false;
@@ -224,7 +263,7 @@ public class Breakout {
 
   private void setPaddleX(boolean right) {
     if (inPlay) {
-      paddle.setX(paddle.newPaddleX(right, wWidth, PADDLE_SPEED));
+      paddle.setNewXPos(right, playableWindowWidth);
     }
   }
 
@@ -241,8 +280,8 @@ public class Breakout {
     String[] data = inStream.readLine().split(" ");
     int numCols = Integer.parseInt(data[0]);
     int numRows = Integer.parseInt(data[1]);
-    int blockWidth = wWidth / numCols;
-    int blockHeight = wWidth / numRows;
+    int blockWidth = playableWindowWidth / numCols;
+    int blockHeight = playableWindowWidth / numRows;
 
     int blockSpeed = BASE_BLOCK_SPEED + ((level - 1) * BLOCK_SPEED_INC);
     addBlocksFromFile(inStream, blocks, blockWidth, blockHeight, blockSpeed);
@@ -322,6 +361,7 @@ public class Breakout {
   }
 
   private void doDisAdv(String disadv) {
+    //use a switch statement for easier future modifications (adding more disadvantages)
     switch (disadv) {
       case "slippery paddle" -> slipperyPaddle(true);
       default -> {
@@ -358,7 +398,7 @@ public class Breakout {
   }
 
   private void spreadHolidayCheer(BlackIceBlock blk) {
-    List<Integer[]> blocksToDestroy = blk.destroySurroundingBlocks(blocks);
+    List<Integer[]> blocksToDestroy = blk.getSurroundingBlocks(blocks);
     for (Integer[] blockLocation : blocksToDestroy) {
       destroyBlock(blockLocation[0], blockLocation[1]);
     }
@@ -396,6 +436,11 @@ public class Breakout {
     won = true;
   }
 
+  /**
+   * Indicates is the Breakout game is still being played
+   *
+   * @return true if game is ongoing, false if game has come to an end (player has won/lost)
+   */
   public boolean gameIsRunning() {
     if (won) {
       return false;
@@ -406,6 +451,11 @@ public class Breakout {
     return true;
   }
 
+  /**
+   * Returns the results of the game
+   *
+   * @return true if the player has won, false if they have lost
+   */
   public boolean gameIsWon() {
     return won;
   }

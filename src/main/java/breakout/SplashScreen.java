@@ -7,6 +7,21 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
+/**
+ * SplashScreen is the screen that is displayed at the beginning of Breakout as well as between
+ * levels. It contains the game name, explains the rules of the game, and displays the level about
+ * to be played. Stays up until the "enter" key is clicked
+ * <p>
+ * This is a very bare-bones class solely for the purpose of displaying text
+ * <p>
+ * Extends Screen, depends on Arrays, List, Scene, Color, Paint, and Text.
+ * <p>
+ * create a SplashScreen instance: SplashScreen splash = new SplashScreen(); display its contents:
+ * splash.drawScene(windowWidth, windowHeight, backgroundColor, gameLevel)
+ *
+ * @author Cynthia France
+ * @see Screen
+ */
 public class SplashScreen extends Screen {
 
   private static final int titleTextSize = 30;
@@ -18,6 +33,19 @@ public class SplashScreen extends Screen {
   private Text instructions = new Text();
   private List<Text> allText;
 
+  /**
+   * Draws/creates the scene specified.
+   * <p>
+   * This screen contains the game title, basic rules, level to be played, and instructions on how
+   * to continue.
+   *
+   * @param width      the width of the window the scene will be displayed in
+   * @param height     the height of the window the scene will be displayed in
+   * @param background the background color of the scene
+   * @param lvl        the Breakout level the player is about to play
+   * @return the Scene created
+   * @see Scene
+   */
   public Scene drawScene(int width, int height, Paint background, int lvl) {
     allText = Arrays.asList(title, rules, lvlText, instructions);
 

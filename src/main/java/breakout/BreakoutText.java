@@ -5,7 +5,23 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+/**
+ * This is the class that manages all Text for the Breakout game (ie lives left, block hits, blocks
+ * destroyed, etc.)
+ * <p>
+ * Its purpose is to keep track of all text, load and create Text objects, set and reset their
+ * content/locations to facilitate game play
+ * <p>
+ * Depends on Group, Color, Font, Text
+ * <p>
+ * to create: BreakoutText myText = new BreakoutText();
+ * <p>
+ * Use the methods below to draw/display the text on the screen and update their contents
+ *
+ * @author Cynthia France
+ */
 public class BreakoutText {
+
   public static final int TEXT_MARGIN_SIZE = 25;
   public static final int BASIC_FONT_SIZE = 18;
   public static final int TITLE_FONT_SIZE = 50;
@@ -30,6 +46,14 @@ public class BreakoutText {
   private int windowWidth;
   private int windowHeight;
 
+  /**
+   * Creates an instance of BreakoutText
+   * <p>
+   * Loads and creates all Text and specifies their location in the screen
+   *
+   * @param width  the width of the window
+   * @param height the height of the window
+   */
   public BreakoutText(int width, int height) {
     windowWidth = width;
     windowHeight = height;
@@ -37,7 +61,7 @@ public class BreakoutText {
     setUpText();
   }
 
-  public void setUpText() {
+  private void setUpText() {
     addGameTextLocations();
   }
 
@@ -52,6 +76,16 @@ public class BreakoutText {
     disadvTextLoc = new double[]{windowWidth / 2, windowHeight - marginSpacer};
   }
 
+  /**
+   * Sets the content and attributes of each Text object and sets their location in the screen. Adds
+   * all Text needed to play the game to root to be displayed
+   *
+   * @param root         the Group of Nodes that will be displayed in the screen
+   * @param level        the current level of game being played
+   * @param livesLeft    the amount of lives the player has left
+   * @param blocksHit    the number of blocks hit
+   * @param blocksBroken the number of blocks broken
+   */
   public void drawText(Group root, int level, int livesLeft, int blocksHit, int blocksBroken) {
 
     setBasicTextOptions(lvlText, "Level: " + level, BASIC_FONT_SIZE, Color.LIGHTBLUE);
@@ -83,8 +117,8 @@ public class BreakoutText {
     winMsg.setX(windowWidth / 2 - winMsg.getBoundsInParent().getWidth() / 2);
     winMsg.setY(2 * (windowHeight / 5));
 
-    setBasicTextOptions(nextLvlMsg, "Press enter to continue",
-        BASIC_FONT_SIZE, Color.MEDIUMSPRINGGREEN);
+    setBasicTextOptions(nextLvlMsg, "Press enter to continue", BASIC_FONT_SIZE,
+        Color.MEDIUMSPRINGGREEN);
     nextLvlMsg.setX(windowWidth / 2 - nextLvlMsg.getBoundsInParent().getWidth() / 2);
     nextLvlMsg.setY(2 * (windowHeight / 5) + 2 * winMsg.getBoundsInParent().getHeight());
 
@@ -100,6 +134,19 @@ public class BreakoutText {
     root.getChildren().add(lvlText);
   }
 
+  /**
+   * Updates the text contents to reflect the current state of the game. If the player has won/lost,
+   * it will also display the winning/losing message
+   *
+   * @param root          the Group of Nodes that will be displayed in the screen
+   * @param livesLeft     the amount of lives the player has left
+   * @param blocksHit     the number of blocks hit
+   * @param blocksBroken  the number of blocks broken
+   * @param powerUpActive the power up currently in play, if any
+   * @param disAdvActive  the disadvantage currently in play, if any
+   * @param won           whether the player has won the game. True if they have won, false
+   *                      otherwise
+   */
   public void updateText(Group root, int livesLeft, int blocksHit, int blocksBroken,
       String powerUpActive, String disAdvActive, boolean won) {
 
