@@ -23,6 +23,7 @@ public class ResultsScreen extends Screen {
 
   public static final int STATUS_TEXT_SIZE = 30;
   public static final int RESULT_TEXT_SIZE = 50;
+  public static final String SNOWFLAKE_EMOJI = new String(Character.toString('\u2744'));
 
   private Text gameOver = new Text();
   private Text winText = new Text();
@@ -45,11 +46,13 @@ public class ResultsScreen extends Screen {
     gameOver.setX(width / 2 - gameOver.getBoundsInParent().getWidth() / 2);
     gameOver.setY(2 * (height / 5));
 
-    setBasicTextOptions(winText, "YOU WIN!", RESULT_TEXT_SIZE, Color.LIGHTBLUE);
+    setBasicTextOptions(winText, SNOWFLAKE_EMOJI + "  YOU WIN!  " + SNOWFLAKE_EMOJI,
+        RESULT_TEXT_SIZE, Color.LIGHTBLUE);
     winText.setX(width / 2 - winText.getBoundsInParent().getWidth() / 2);
     winText.setY(2 * (height / 5) + 2 * gameOver.getBoundsInParent().getHeight());
 
-    setBasicTextOptions(loseText, "YOU LOSE", RESULT_TEXT_SIZE, Color.LIGHTBLUE);
+    setBasicTextOptions(loseText, SNOWFLAKE_EMOJI + "  YOU LOSE  " + SNOWFLAKE_EMOJI,
+        RESULT_TEXT_SIZE, Color.LIGHTBLUE);
     loseText.setX(width / 2 - loseText.getBoundsInParent().getWidth() / 2);
     loseText.setY(2 * (height / 5) + 2 * gameOver.getBoundsInParent().getHeight());
 

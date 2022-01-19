@@ -26,6 +26,7 @@ public class SplashScreen extends Screen {
 
   public static final int TITLE_TEXT_SIZE = 30;
   public static final int DESC_TEXT_SIZE = 18;
+  public static final String SNOWFLAKE_EMOJI = new String(Character.toString('\u2744'));
 
   private final Text title = new Text();
   private final Text rules = new Text();
@@ -48,20 +49,24 @@ public class SplashScreen extends Screen {
   public Scene drawScene(int width, int height, Paint background, int lvl) {
     List<Text> allText = Arrays.asList(title, rules, lvlText, instructions);
 
-    setBasicTextOptions(title, "BREAKOUT: WINTER WONDERLAND", TITLE_TEXT_SIZE, Color.LIGHTBLUE);
+    setBasicTextOptions(title, SNOWFLAKE_EMOJI
+            + "  BREAKOUT: WINTER WONDERLAND  " + SNOWFLAKE_EMOJI,
+        TITLE_TEXT_SIZE, Color.LIGHTBLUE);
     title.setX(width / 2 - title.getBoundsInParent().getWidth() / 2);
     title.setY(height / 4);
 
-    setBasicTextOptions(rules,
-        "Move the paddle (arrow keys) to catch the ball before it hits the ground \n"
-            + "Different blocks require different numbers of hits to break \n"
-            + "Some blocks perform special actions when broken \n" + "Break blocks to win \n \n"
-            + "Good Luck!", DESC_TEXT_SIZE, Color.LIGHTBLUE);
+    setBasicTextOptions(rules, SNOWFLAKE_EMOJI
+        + "  Move the paddle (arrow keys) to catch the ball before it hits the ground \n"
+        + SNOWFLAKE_EMOJI + "  Different blocks require different numbers of hits to break \n"
+        + SNOWFLAKE_EMOJI + "  Some blocks perform special actions when broken \n"
+        + SNOWFLAKE_EMOJI + "  Break blocks to win \n \n"
+        + "Good Luck!", DESC_TEXT_SIZE, Color.LIGHTBLUE);
     rules.setX(width / 2 - rules.getBoundsInParent().getWidth() / 2);
     rules.setY(height / 4 + 2 * title.getBoundsInParent().getHeight());
 
-    setBasicTextOptions(lvlText, "LEVEL " + lvl + getLevelName(lvl), TITLE_TEXT_SIZE,
-        Color.LIGHTBLUE);
+    setBasicTextOptions(lvlText,
+        SNOWFLAKE_EMOJI + "  LEVEL " + lvl + getLevelName(lvl) + "  " + SNOWFLAKE_EMOJI,
+        TITLE_TEXT_SIZE, Color.LIGHTBLUE);
     lvlText.setX(width / 2 - lvlText.getBoundsInParent().getWidth() / 2);
     lvlText.setY(
         height / 4 + 2 * title.getBoundsInParent().getHeight() + 1.5 * rules.getBoundsInParent()
