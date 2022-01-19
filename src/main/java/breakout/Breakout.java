@@ -15,10 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Paint;
 
-//RULE: ONLY ONE POWERUP AT A TIME
-//IF BALL HITS TOO CLOSE TO EDGE OF BLOCK, IT WILL ROCKET OFF AT DIFFERENT ANGLE
-//BUG: ball sometimes goes through the block, idk why
-
 /**
  * Breakout is the meat of Breakout: Winter Wonderland. This class is used to build the Breakout
  * game and obtain subsequent animation frames. All game logic takes place in this class
@@ -49,7 +45,7 @@ public class Breakout {
   public static final int PADDLE_WIDTH = 75;
   public static final int BASE_BLOCK_SPEED = 0;
   public static final int BLOCK_SPEED_INC = 5;
-  public static final int NUM_LIVES = 5;
+  public static final int NUM_LIVES = 3;
   public static final int POWERUP_TIME_LIMIT = 15;
   public static final int DISADV_TIME_LIMIT = 15;
   public static final List<String> POWERUPS = Arrays.asList("winter freeze", "avalanche",

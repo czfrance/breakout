@@ -4,11 +4,6 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
-/*
-    RESOURCES
-    ImagePattern: https://stackoverflow.com/questions/22848829/how-do-i-add-an-image-inside-a-rectangle-or-a-circle-in-javafx
- */
-
 /**
  * Paddle is the class that holds all information regarding the paddle being used in the game. The
  * paddle moves horizontally at the bottom of the playable window. The goal of the player is to use

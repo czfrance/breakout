@@ -66,7 +66,7 @@ could be general ideas too.
 
 ## Cheat Key Ideas
 
- * (s) Extra Lives
+ * (s) Increase speed of ball
 
  * (f) Automatic level pass
 
