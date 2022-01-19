@@ -43,20 +43,24 @@ Create ``.txt`` block map with the following format:
 * Create a new constant with its file path (``src/main/resources/lvlName.txt``)
 * Update ``Main``'s ``NUM_LVLS`` CONSTANT
 * Add the new level to the ``getMap()`` function in ``Breakout.java``
+* Document this feature in the ``README`` markdown file
 
 ### New Block Types
 * Create a new subclass that extends ``Block`` with all desired features
 * Designate the character it will be represented by in the block map
 * Add its images (normal, iced, and whatever additional images) to ``BreakoutImages``
+* Document this feature in the ``README`` markdown file
 
 ### New Effects
 * Add new effect to its appropriate constants ``List`` (``POWERUPS``, ``DISADVGS``)
 * If the effect is not linked to any event outside ``BlackIceBlock``, add a
   function that performs the desired action and link accordingly
 * If the effect is linked to some other event, connect accordingly
+* Document this feature in the ``README`` markdown file
 
 ### New Paddles & Balls
 * Create subclasses of ``Paddle`` and ``Ball`` class & connect to your specifications
+* Document this feature in the ``README`` markdown file
 
 ## Future Changes
 * creating an ``Effects`` class with ``PowerUp`` and ``Disadvantage`` subclasses
